@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Мой сайт</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f2f2f2; /* Изменен фон на светло-серый */
+    }
+    
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    nav {
+      background-color: #fff;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    nav ul li {
+      margin-bottom: 10px;
+    }
+    
+    nav ul li a {
+      display: block;
+      text-decoration: none;
+      color: #333;
+      padding: 10px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      width: 200px;
+      transition: background-color 0.3s ease; /* Добавлено плавное изменение цвета при наведении */
+    }
+    
+    nav ul li a:hover {
+      background-color: #ccc; /* Изменен цвет фона при наведении */
+    }
+    
+    main {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Добавлена тень для контейнера */
+    }
+    
+    section {
+      margin-bottom: 20px;
+      display: none;
+      padding: 20px;
+    }
+    
+    section img {
+      max-width: 100%;
+      float: left;
+      margin-right: 20px;
+    }
+    
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Мой сайт</h1>
+  </header>
+  
+  <nav>
+    <ul>
+      <li><a href="#section4">Меню</a></li>
+    </ul>
+  </nav>
+  
+  <main>
+    <section id="section4">
+      <h2>Содержимое вкладки "Меню"</h2>
+      <nav>
+        <ul>
+          <li><a href="#section1">Вкладка 1</a></li>
+          <li><a href="#section2">Вкладка 2</a></li>
+          <li><a href="#section3">Вкладка 3</a></li>
+        </ul>
+      </nav>
+    </section>
+    
+    <section id="section1">
+      <h2>Содержимое вкладки 1</h2>
+      <img src="http://mtdata.ru/u24/photo0BCA/20852435466-0/original.jpg" alt="Фото лошади">
+      <p>Информация о лошадях:</p>
+      <ul>
+        <li>Лошадь (лат. Equus caballus) — млекопитающее, одомашненный подвид дикой лошади семейства непарнокопытных.</li>
+        <li>Лошади долгое время служили человеку верой и правдой, были неотъемлемой частью его жизни.</li>
+        <li>Лошади являются одними из наиболее полезных животных для человека. Их используют для перевозки грузов и людей, сельского хозяйства, спорта и развлечений.</li>
+      </ul>
+    </section>
+    
+    <section id="section2">
+      <h2>Содержимое вкладки 2</h2>
+      <img src="https://funart.pro/uploads/posts/2021-07/1625759110_30-funart-pro-p-deti-golubei-zhivotnie-krasivo-foto-33.jpg" alt="Фото голубя">
+      <p>Информация о голубях:</p>
+      <ul>
+        <li>Голубь (лат. Columba livia) — птица семейства голубиных.</li>
+        <li>Голуби являются одними из самых распространенных и знакомых видов птиц.</li>
+        <li>Голуби часто используются как символ мира, любви и свободы.</li>
+      </ul>
+    </section>
+    
+    <section id="section3">
+      <h2>Содержимое вкладки 3</h2>
+      <p>Текст и содержимое вкладки 3.</p>
+    </section>
+  </main>
+  
+  <footer>
+    <p>&copy; 2023 Мой сайт. Все права защищены.</p>
+  </footer>
+  
+  <script>
+    window.addEventListener("DOMContentLoaded", function() {
+      // Получение ссылок на вкладки
+      var tabs = document.querySelectorAll("nav ul li a");
+      
+      // Получение ссылок на секции
+      var sections = document.querySelectorAll("section");
+      
+      // Переключение на первую вкладку и секцию
+      tabs[0].classList.add("active");
+      sections[0].style.display = "block";
+      
+      // Обработчик событий для переключения вкладок
+      tabs.forEach(function(tab) {
+        tab.addEventListener("click", function(e) {
+          e.preventDefault();
+          
+          // Удаление класса "active" у всех вкладок
+          tabs.forEach(function(tab) {
+            tab.classList.remove("active");
+          });
+          
+          // Скрытие всех секций
+          sections.forEach(function(section) {
+            section.style.display = "none";
+          });
+          
+          // Отображение выбранной секции
+          var target = this.getAttribute("href");
+          var section = document.querySelector(target);
+          section.style.display = "block";
+          
+          // Добавление класса "active" к выбранной вкладке
+          this.classList.add("active");
+        });
+      });
+    });
+  </script>
+</body>
+</html>
