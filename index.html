@@ -78,21 +78,12 @@
   
   <nav>
     <ul>
-      <li><a href="#section4">Меню</a></li>
+      <li><a href="#section1">Вкладка 1</a></li>
+      <li><a href="#" onclick="openTab('section2')">Трактора</a></li>
     </ul>
   </nav>
   
   <main>
-    <section id="section4">
-      <h2>Содержимое вкладки "Меню"</h2>
-      <nav>
-        <ul>
-          <li><a href="#section1">Вкладка 1</a></li>
-          <li><a href="#section2">Трактора</a></li>
-        </ul>
-      </nav>
-    </section>
-    
     <section id="section1">
       <h2>Содержимое вкладки 1</h2>
       <p>Информация о лошадях:</p>
@@ -118,42 +109,24 @@
   </footer>
   
   <script>
-    window.addEventListener("DOMContentLoaded", function() {
-      // Получение ссылок на вкладки
+    function openTab(tabId) {
       var tabs = document.querySelectorAll("nav ul li a");
-      
-      // Получение ссылок на секции
       var sections = document.querySelectorAll("section");
       
-      // Переключение на первую вкладку и секцию
-      tabs[0].classList.add("active");
-      sections[0].style.display = "block";
-      
-      // Обработчик событий для переключения вкладок
       tabs.forEach(function(tab) {
-        tab.addEventListener("click", function(e) {
-          e.preventDefault();
-          
-          // Удаление класса "active" у всех вкладок
-          tabs.forEach(function(tab) {
-            tab.classList.remove("active");
-          });
-          
-          // Скрытие всех секций
-          sections.forEach(function(section) {
-            section.style.display = "none";
-          });
-          
-          // Отображение выбранной секции
-          var target = this.getAttribute("href");
-          var section = document.querySelector(target);
-          section.style.display = "block";
-          
-          // Добавление класса "active" к выбранной вкладке
-          this.classList.add("active");
-        });
+        tab.classList.remove("active");
       });
-    });
+      
+      sections.forEach(function(section) {
+        section.style.display = "none";
+      });
+      
+      var selectedTab = document.querySelector("a[href='#" + tabId + "']");
+      var selectedSection = document.querySelector("#" + tabId);
+      
+      selectedTab.classList.add("active");
+      selectedSection.style.display = "block";
+    }
   </script>
 </body>
 </html>
