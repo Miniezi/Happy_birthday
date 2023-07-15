@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Программирование 101</title>
+  <meta charset="UTF-8">
+  <title>Мой сайт</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
     
     header {
@@ -17,30 +17,41 @@
       text-align: center;
     }
     
-    h1 {
-      margin: 0;
-      font-size: 36px;
-    }
-    
     nav {
-      background-color: #666;
+      background-color: #f2f2f2;
       padding: 10px;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
     
-    nav a {
-      color: #fff;
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    nav ul li {
+      margin-bottom: 10px;
+    }
+    
+    nav ul li a {
+      display: block;
       text-decoration: none;
-      margin: 0 10px;
-      font-size: 18px;
+      color: #333;
+      padding: 10px;
+      background-color: #ccc;
+      border-radius: 5px;
+      width: 200%;
+    }
+    
+    main {
+      padding: 20px;
     }
     
     section {
-      padding: 20px;
       margin-bottom: 20px;
-      background-color: #fff;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: none;
     }
     
     footer {
@@ -50,44 +61,114 @@
       text-align: center;
     }
     
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 24px;
-      }
-      
-      nav a {
-        font-size: 16px;
-      }
-      
-      section {
-        padding: 10px;
-      }
+    section img {
+      max-width: 100%;
+      float: left;
+      margin-right: 20px;
+    }
+    
+    #section2 {
+      background-image: url(images/horse.jpg);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      padding: 20px;
+      color: #fff;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Программирование 101</h1>
+    <h1>Мой сайт</h1>
   </header>
   
   <nav>
-    <a href="html.html">HTML</a>
-    <a href="css.html">CSS</a>
-    <a href="javascript.html">JavaScript</a>
+    <ul>
+      <li><a href="#section4">Меню</a></li>
+    </ul>
   </nav>
   
-  <section>
-    <h2>Добро пожаловать в мир программирования!</h2>
-    <p>Выберите одну из следующих опций:</p>
-    <ul>
-      <li>Изучить HTML</li>
-      <li>Изучить CSS</li>
-      <li>Изучить JavaScript</li>
-    </ul>
-  </section>
+  <main>
+    <section id="section4">
+      <h2>Содержимое вкладки "Меню"</h2>
+      <nav>
+        <ul>
+          <li><a href="#section1">Вкладка 1</a></li>
+          <li><a href="#section2">Вкладка 2</a></li>
+          <li><a href="#section3">Вкладка 3</a></li>
+        </ul>
+      </nav>
+    </section>
+    
+    <section id="section1">
+      <h2>Содержимое вкладки 1</h2>
+      <img src="images/horse.jpg" alt="Фото лошади">
+      <p>Информация о лошадях:</p>
+      <ul>
+        <li>Лошадь (лат. Equus caballus) — млекопитающее, одомашненный подвид дикой лошади семейства непарнокопытных.</li>
+        <li>Лошади долгое время служили человеку верой и правдой, были неотъемлемой частью его жизни.</li>
+        <li>Лошади являются одними из наиболее полезных животных для человека. Их используют для перевозки грузов и людей, сельского хозяйства, спорта и развлечений.</li>
+      </ul>
+    </section>
+    
+    <section id="section2">
+      <h2>Содержимое вкладки 2</h2>
+      <p>Информация о голубях:</p>
+      <ul>
+        <li>Голубь (лат. Columba livia) — птица семейства голубиных.</li>
+        <li>Голуби являются одними из самых распространенных и знакомых видов птиц.</li>
+        <li>Голуби часто используются как символ мира, любви и свободы.</li>
+      </ul>
+    </section>
+    
+    <section id="section3">
+      <h2>Содержимое вкладки 3</h2>
+      <img src="images/bird.jpg" alt="Фото вкладки 3">
+      <p>Текст и содержимое вкладки 3.</p>
+    </section>
+  </main>
   
   <footer>
-    &copy; 2023 Программирование 101. Все права защищены.
+    <p>&copy; 2023 Мой сайт. Все права защищены.</p>
   </footer>
+  
+  <script>
+    window.addEventListener("DOMContentLoaded", function() {
+      // Получение ссылок на вкладки
+      var tabs = document.querySelectorAll("nav ul li a");
+      
+      // Получение ссылок на секции
+      var sections = document.querySelectorAll("section");
+      
+      // Переключение на первую вкладку и секцию
+      tabs[0].classList.add("active");
+      sections[0].style.display = "block";
+      
+      // Обработчик событий для переключения вкладок
+      tabs.forEach(function(tab) {
+        tab.addEventListener("click", function(e) {
+          e.preventDefault();
+          
+          // Удаление класса "active" у всех вкладок
+          tabs.forEach(function(tab) {
+            tab.classList.remove("active");
+          });
+          
+          // Скрытие всех секций
+          sections.forEach(function(section) {
+            section.style.display = "none";
+          });
+          
+          // Отображение выбранной секции
+          var target = this.getAttribute("href");
+          var section = document.querySelector(target);
+          section.style.display = "block";
+          
+          // Добавление класса "active" к выбранной вкладке
+          this.classList.add("active");
+        });
+      });
+    });
+  </script>
 </body>
 </html>
