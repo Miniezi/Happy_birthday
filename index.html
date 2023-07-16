@@ -2,9 +2,123 @@
 <html>
 <head>
   <title>Змейка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Стили для игры */
-    /* ... */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    #game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
+      overflow: auto; /* Добавлено */
+    }
+    
+    #game-board {
+      position: relative;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      width: 80vw;
+      max-width: 400px;
+      height: 80vw;
+      max-height: 400px;
+      margin: 20px 0;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px; /* Изменено */
+      margin-bottom: 10px; /* Изменено */
+    }
+    
+    .button {
+      width: 40px; /* Изменено */
+      height: 40px; /* Изменено */
+      background-color: #4CAF50;
+      color: #fff;
+      font-size: 12px; /* Изменено */
+      border-radius: 50%;
+      line-height: 40px; /* Изменено */
+      text-align: center;
+      cursor: pointer;
+      margin: 0 10px;
+      outline: none; /* Добавлено */
+    }
+    
+    #score {
+      font-size: 16px; /* Изменено */
+      margin-top: 10px;
+    }
+    
+    #game-over-menu {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 999;
+    }
+    
+    #game-over-menu h2 {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    
+    #game-over-menu p {
+      margin: 0;
+      margin-bottom: 20px;
+    }
+    
+    #restart-button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 8px 16px; /* Изменено */
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    /* Адаптивность интерфейса для телефона */
+    @media only screen and (max-width: 600px) {
+      #game-board {
+        width: 90vw;
+        height: 90vw;
+        max-height: 450px;
+        margin: 10px 0;
+      }
+      
+      .button {
+        width: 30px; /* Изменено */
+        height: 30px; /* Изменено */
+        font-size: 10px; /* Изменено */
+        line-height: 30px; /* Изменено */
+      }
+      
+      #score {
+        font-size: 14px; /* Изменено */
+      }
+      
+      #game-over-menu {
+        padding: 10px;
+      }
+      
+      #restart-button {
+        padding: 6px 12px; /* Изменено */
+      }
+    }
   </style>
 </head>
 <body>
@@ -76,7 +190,10 @@
         gameBoard.innerHTML = '';
         snake.forEach(segment => {
           const segmentElement = document.createElement('div');
-          segmentElement.className = 'snake-segment';
+          segmentElement.style.width = cellSize + 'px';
+          segmentElement.style.height = cellSize + 'px';
+          segmentElement.style.backgroundColor = '#000';
+          segmentElement.style.position = 'absolute';
           segmentElement.style.left = segment.x * cellSize + 'px';
           segmentElement.style.top = segment.y * cellSize + 'px';
           gameBoard.appendChild(segmentElement);
@@ -85,7 +202,10 @@
       
       function drawFood() {
         const foodElement = document.createElement('div');
-        foodElement.className = 'food';
+        foodElement.style.width = cellSize + 'px';
+        foodElement.style.height = cellSize + 'px';
+        foodElement.style.backgroundColor = '#f00';
+        foodElement.style.position = 'absolute';
         foodElement.style.left = food.x * cellSize + 'px';
         foodElement.style.top = food.y * cellSize + 'px';
         gameBoard.appendChild(foodElement);
@@ -93,17 +213,6 @@
       
       function updateSnake() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-        
-        if (newHead.x < 0) newHead.x = totalCells - 1;
-        if (newHead.x >= totalCells) newHead.x = 0;
-        if (newHead.y < 0) newHead.y = totalCells - 1;
-        if (newHead.y >= totalCells) newHead.y = 0;
-        
-        if (isSnakeCollision(newHead.x, newHead.y)) {
-          gameOver();
-          return;
-        }
-        
         snake.unshift(newHead);
         if (checkFoodCollision()) {
           handleFoodCollision();
@@ -115,8 +224,7 @@
       function handleFoodCollision() {
         score++;
         placeFood();
-        scoreElement.textContent = 'Очки: ' + score;
-        drawFood();
+        updateScore();
       }
       
       function checkFoodCollision() {
@@ -124,15 +232,8 @@
         return head.x === food.x && head.y === food.y;
       }
       
-      function gameLoop() {
-        updateSnake();
-        drawSnake();
-      }
-      
-      function startGame() {
-        placeFood();
-        scoreElement.textContent = 'Очки: 0';
-        gameInterval = setInterval(gameLoop, 200);
+      function updateScore() {
+        scoreElement.textContent = 'Очки: ' + score;
       }
       
       function handleButtonClick(event) {
@@ -151,6 +252,17 @@
             if (direction.x !== -1) direction = { x: 1, y: 0 };
             break;
         }
+      }
+      
+      function checkCollision() {
+        const head = snake[0];
+        return (
+          head.x < 0 ||
+          head.x >= totalCells ||
+          head.y < 0 ||
+          head.y >= totalCells ||
+          snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
+        );
       }
       
       function showGameOverMenu() {
@@ -172,21 +284,49 @@
         direction = { x: 0, y: 0 };
         score = 0;
         placeFood();
-        scoreElement.textContent = 'Очки: 0';
+        updateScore();
         drawSnake();
         hideGameOverMenu();
         startGame();
       }
       
-      function handleWindowResize() {
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const gameContainerSize = Math.min(windowWidth, windowHeight) * 0.8;
-        gameContainer.style.width = gameContainerSize + 'px';
-        gameContainer.style.height = gameContainerSize + 'px';
+      function gameLoop() {
+        updateSnake();
+        if (checkCollision()) {
+          gameOver();
+          return;
+        }
+        drawSnake();
+        drawFood();
       }
       
-      window.addEventListener('resize', handleWindowResize);
+      function startGame() {
+        gameInterval = setInterval(gameLoop, 200);
+      }
+      
+      function handleOrientationChange() {
+        setTimeout(() => {
+          const aspectRatio = window.innerWidth / window.innerHeight;
+          const maxDimension = Math.max(window.innerWidth, window.innerHeight);
+          const boardSize = Math.floor(maxDimension * 0.8);
+          const buttonSize = Math.floor(boardSize / totalCells);
+          
+          gameBoard.style.width = boardSize + 'px';
+          gameBoard.style.height = boardSize + 'px';
+          gameBoard.style.fontSize = buttonSize + 'px';
+          
+          document.querySelectorAll('.button').forEach(button => {
+            button.style.width = buttonSize + 'px';
+            button.style.height = buttonSize + 'px';
+            button.style.fontSize = Math.floor(buttonSize * 0.6) + 'px';
+          });
+          
+          drawSnake();
+          drawFood();
+        }, 300);
+      }
+      
+      window.addEventListener('orientationchange', handleOrientationChange);
       
       startGame();
       
@@ -202,8 +342,6 @@
       downButton.addEventListener('click', handleButtonClick);
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
-      
-      handleWindowResize();
     });
   </script>
 </body>
