@@ -15,22 +15,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      max-width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
     }
     
     #game-board {
       position: relative;
       background-color: #fff;
       border: 1px solid #ccc;
-      width: 450px;
-      height: 450px;
+      width: 90vw;
+      max-width: 450px;
+      height: 90vw;
+      max-height: 450px;
       margin: 20px 0;
-    }
-    
-    #snake {
-      position: absolute;
-      background-color: #000;
-      width: 30px;
-      height: 30px;
     }
     
     .button-container {
@@ -52,22 +51,6 @@
       margin: 0 10px;
     }
     
-    #score {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    
-    #score-container {
-      display: flex;
-      justify-content: flex-end;
-      width: 100%;
-    }
-    
-    #score-value {
-      margin-right: 10px;
-    }
-    
     #message {
       font-size: 24px;
       font-weight: bold;
@@ -79,9 +62,7 @@
   <h1>Змейка</h1>
   
   <div id="game-container">
-    <div id="game-board">
-      <div id="snake"></div>
-    </div>
+    <div id="game-board"></div>
     
     <div class="button-container">
       <div class="button" id="up-button">↑</div>
@@ -95,13 +76,6 @@
     <div class="button-container">
       <div class="button" id="down-button">↓</div>
     </div>
-
-    <div id="score-container">
-      <div id="score">Очки:</div>
-      <div id="score-value">0</div>
-    </div>
-    
-    <button id="start-button" class="button">Старт</button>
     
     <div id="message"></div>
   </div>
@@ -109,15 +83,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gameBoard = document.getElementById('game-board');
-      const snakeElement = document.getElementById('snake');
       const buttons = document.querySelectorAll('.button');
-      const startButton = document.getElementById('start-button');
-      const scoreValueElement = document.getElementById('score-value');
       const messageElement = document.getElementById('message');
 
-      const gameSize = 450;
-      const cellSize = 30;
-      const totalCells = gameSize / cellSize;
+      const cellSize = 20;
+      const totalCells = 22;
       const initialSnakeLength = 3;
       const maxSnakeSize = 15;
 
@@ -244,7 +214,7 @@
       }
 
       function updateScore() {
-        scoreValueElement.textContent = score;
+        messageElement.textContent = 'Очки: ' + score;
       }
 
       function showMessage(message) {
@@ -256,7 +226,6 @@
         direction = { x: 0, y: 0 };
         score = 0;
         gameOver = false;
-        startButton.disabled = false;
         gameStarted = false;
         clearBoard();
         showMessage('');
@@ -265,34 +234,6 @@
       buttons.forEach(button => {
         button.addEventListener('click', handleButtonClick);
       });
-
-      startButton.addEventListener('click', () => {
-        if (!gameStarted) {
-          resetGame();
-          snake.push({ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) });
-          for (let i = 1; i < initialSnakeLength; i++) {
-            snake.push({ x: snake[i - 1].x - 1, y: snake[i - 1].y });
-          }
-          placeFood();
-          updateScore();
-          gameInterval = setInterval(gameLoop, 150);
-          gameStarted = true;
-        }
-      });
-
-      function gameLoop() {
-        if (checkCollision()) {
-          clearInterval(gameInterval);
-          gameOver = true;
-          showMessage('Игра окончена! Очки: ' + score);
-          return;
-        }
-
-        clearBoard();
-        updateSnake();
-        drawSnake();
-        drawFood();
-      }
 
       document.addEventListener('keydown', event => {
         if (gameStarted && !gameOver) {
@@ -320,6 +261,37 @@
           }
         }
       });
+
+      function startGame() {
+        if (!gameStarted) {
+          resetGame();
+          const snakeStartPosition = Math.floor(totalCells / 2);
+          snake.push({ x: snakeStartPosition, y: snakeStartPosition });
+          for (let i = 1; i < initialSnakeLength; i++) {
+            snake.push({ x: snake[i - 1].x - 1, y: snake[i - 1].y });
+          }
+          placeFood();
+          updateScore();
+          gameInterval = setInterval(gameLoop, 150);
+          gameStarted = true;
+        }
+      }
+
+      function gameLoop() {
+        if (checkCollision()) {
+          clearInterval(gameInterval);
+          gameOver = true;
+          showMessage('Игра окончена! Очки: ' + score);
+          return;
+        }
+
+        clearBoard();
+        updateSnake();
+        drawSnake();
+        drawFood();
+      }
+
+      startButton.addEventListener('click', startGame);
     });
   </script>
 </body>
