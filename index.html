@@ -300,6 +300,30 @@
         gameInterval = setInterval(gameLoop, 200);
       }
       
+      function handleOrientationChange() {
+        setTimeout(() => {
+          const aspectRatio = window.innerWidth / window.innerHeight;
+          const maxDimension = Math.max(window.innerWidth, window.innerHeight);
+          const boardSize = Math.floor(maxDimension * 0.8);
+          const buttonSize = Math.floor(boardSize / totalCells);
+          
+          gameBoard.style.width = boardSize + 'px';
+          gameBoard.style.height = boardSize + 'px';
+          gameBoard.style.fontSize = buttonSize + 'px';
+          
+          document.querySelectorAll('.button').forEach(button => {
+            button.style.width = buttonSize + 'px';
+            button.style.height = buttonSize + 'px';
+            button.style.fontSize = Math.floor(buttonSize * 0.6) + 'px';
+          });
+          
+          drawSnake();
+          drawFood();
+        }, 300);
+      }
+      
+      window.addEventListener('orientationchange', handleOrientationChange);
+      
       startGame();
       
       restartButton.addEventListener('click', resetGame);
