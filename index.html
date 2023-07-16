@@ -56,6 +56,11 @@
       margin-top: 10px;
     }
     
+    #timer {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+    
     #game-over-menu {
       display: none;
       position: absolute;
@@ -85,11 +90,6 @@
       padding: 8px 16px;
       border-radius: 5px;
       cursor: pointer;
-    }
-    
-    #timer {
-      font-size: 24px;
-      margin-top: 10px;
     }
     
     /* Адаптивность интерфейса для телефона */
@@ -134,7 +134,7 @@
     
     <div id="score">Очки: 0</div>
     
-    <div id="timer">Время: 0 сек</div> <!-- Добавлено -->
+    <div id="timer">Время: 0 сек</div>
     
     <div class="button-container">
       <div class="button" id="up-button">↑</div>
@@ -161,10 +161,10 @@
       const gameContainer = document.getElementById('game-container');
       const gameBoard = document.getElementById('game-board');
       const scoreElement = document.getElementById('score');
+      const timerElement = document.getElementById('timer');
       const gameOverMenu = document.getElementById('game-over-menu');
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
-      const timerElement = document.getElementById('timer');
       
       const cellSize = 15;
       const totalCells = 20;
@@ -174,7 +174,8 @@
       let food = { x: 0, y: 0 };
       let score = 0;
       let gameInterval;
-      let seconds = 0; // Добавлено
+      let seconds = 0;
+      let isMoving = false; // Добавлено
       
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
@@ -246,6 +247,9 @@
       }
       
       function handleButtonClick(event) {
+        if (isMoving) {
+          return;
+        }
         const buttonId = event.target.id;
         switch (buttonId) {
           case 'up-button':
@@ -261,6 +265,7 @@
             if (direction.x !== -1) direction = { x: 1, y: 0 };
             break;
         }
+        isMoving = true; // Добавлено
       }
       
       function checkCollision() {
@@ -294,22 +299,25 @@
         score = 0;
         placeFood();
         updateScore();
-        seconds = 0; // Добавлено
-        timerElement.textContent = 'Время: 0 сек'; // Добавлено
+        seconds = 0;
+        timerElement.textContent = 'Время: 0 сек';
         drawSnake();
         hideGameOverMenu();
         startGame();
+        isMoving = false; // Добавлено
       }
       
       function gameLoop() {
-        updateSnake();
-        if (checkCollision()) {
-          gameOver();
-          return;
+        if (isMoving) { // Добавлено
+          updateSnake();
+          if (checkCollision()) {
+            gameOver();
+            return;
+          }
+          drawSnake();
+          drawFood();
+          updateTimer();
         }
-        drawSnake();
-        drawFood();
-        updateTimer(); // Добавлено
       }
       
       function startGame() {
