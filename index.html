@@ -61,35 +61,36 @@
       margin-top: 10px;
     }
     
-    #game-over-menu {
+    #settings-menu {
       display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       background-color: rgba(0, 0, 0, 0.8);
       color: #fff;
       padding: 20px;
       border-radius: 10px;
       z-index: 999;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
     
-    #game-over-menu h2 {
+    #settings-menu h2 {
       margin: 0;
       margin-bottom: 10px;
     }
     
-    #game-over-menu p {
-      margin: 0;
-      margin-bottom: 20px;
+    #settings-menu label {
+      display: block;
+      margin-bottom: 10px;
     }
     
-    #restart-button {
+    #settings-menu button {
       background-color: #4CAF50;
       color: #fff;
       padding: 8px 16px;
       border-radius: 5px;
       cursor: pointer;
+      margin-top: 10px;
     }
     
     /* Адаптивность интерфейса для телефона */
@@ -149,6 +150,27 @@
       <div class="button" id="down-button">↓</div>
     </div>
     
+    <div id="settings-menu">
+      <h2>Настройки</h2>
+      <label>
+        Размер игрового поля:
+        <select id="field-size">
+          <option value="15">Маленький</option>
+          <option value="20" selected>Средний</option>
+          <option value="25">Большой</option>
+        </select>
+      </label>
+      <label>
+        Скорость игры:
+        <select id="game-speed">
+          <option value="200">Низкая</option>
+          <option value="150" selected>Средняя</option>
+          <option value="100">Высокая</option>
+        </select>
+      </label>
+      <button id="apply-settings">Применить</button>
+    </div>
+    
     <div id="game-over-menu">
       <h2>Игра окончена!</h2>
       <p>Набранные очки: <span id="game-over-score">0</span></p>
@@ -162,20 +184,23 @@
       const gameBoard = document.getElementById('game-board');
       const scoreElement = document.getElementById('score');
       const timerElement = document.getElementById('timer');
+      const settingsMenu = document.getElementById('settings-menu');
+      const fieldSizeSelect = document.getElementById('field-size');
+      const gameSpeedSelect = document.getElementById('game-speed');
       const gameOverMenu = document.getElementById('game-over-menu');
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
+      const applySettingsButton = document.getElementById('apply-settings');
       
-      const cellSize = 15;
-      const totalCells = 20;
-      
+      let cellSize = 15;
+      let totalCells = 20;
       let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
       let direction = { x: 0, y: 0 };
       let food = { x: 0, y: 0 };
       let score = 0;
       let gameInterval;
       let seconds = 0;
-      let isMoving = false; // Добавлено
+      let isMoving = false;
       
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
@@ -247,9 +272,6 @@
       }
       
       function handleButtonClick(event) {
-        if (isMoving) {
-          return;
-        }
         const buttonId = event.target.id;
         switch (buttonId) {
           case 'up-button':
@@ -265,7 +287,7 @@
             if (direction.x !== -1) direction = { x: 1, y: 0 };
             break;
         }
-        isMoving = true; // Добавлено
+        isMoving = true;
       }
       
       function checkCollision() {
@@ -276,6 +298,16 @@
           head.y < 0 ||
           head.y >= totalCells ||
           snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
+        );
+      }
+      
+      function checkOutOfBoundaries() {
+        const head = snake[0];
+        return (
+          head.x < 0 ||
+          head.x >= totalCells ||
+          head.y < 0 ||
+          head.y >= totalCells
         );
       }
       
@@ -304,24 +336,27 @@
         drawSnake();
         hideGameOverMenu();
         startGame();
-        isMoving = false; // Добавлено
       }
       
-      function gameLoop() {
-        if (isMoving) { // Добавлено
-          updateSnake();
-          if (checkCollision()) {
-            gameOver();
-            return;
-          }
-          drawSnake();
-          drawFood();
-          updateTimer();
-        }
+      function applySettings() {
+        const selectedFieldSize = parseInt(fieldSizeSelect.value);
+        const selectedGameSpeed = parseInt(gameSpeedSelect.value);
+        
+        cellSize = Math.floor(gameBoard.offsetWidth / selectedFieldSize);
+        totalCells = Math.floor(gameBoard.offsetWidth / cellSize);
+        gameBoard.style.height = (totalCells * cellSize) + 'px';
+        
+        clearInterval(gameInterval);
+        startGame();
+        hideSettingsMenu();
       }
       
-      function startGame() {
-        gameInterval = setInterval(gameLoop, 200);
+      function showSettingsMenu() {
+        settingsMenu.style.display = 'block';
+      }
+      
+      function hideSettingsMenu() {
+        settingsMenu.style.display = 'none';
       }
       
       function updateTimer() {
@@ -329,44 +364,30 @@
         timerElement.textContent = 'Время: ' + seconds + ' сек';
       }
       
-      function handleOrientationChange() {
-        setTimeout(() => {
-          const aspectRatio = window.innerWidth / window.innerHeight;
-          const maxDimension = Math.max(window.innerWidth, window.innerHeight);
-          const boardSize = Math.floor(maxDimension * 0.8);
-          const buttonSize = Math.floor(boardSize / totalCells);
-          
-          gameBoard.style.width = boardSize + 'px';
-          gameBoard.style.height = boardSize + 'px';
-          gameBoard.style.fontSize = buttonSize + 'px';
-          
-          document.querySelectorAll('.button').forEach(button => {
-            button.style.width = buttonSize + 'px';
-            button.style.height = buttonSize + 'px';
-            button.style.fontSize = Math.floor(buttonSize * 0.6) + 'px';
-          });
-          
-          drawSnake();
-          drawFood();
-        }, 300);
-      }
-      
-      window.addEventListener('orientationchange', handleOrientationChange);
-      
-      startGame();
-      
       restartButton.addEventListener('click', resetGame);
+      applySettingsButton.addEventListener('click', applySettings);
       
-      // Button event listeners
       const upButton = document.getElementById('up-button');
       const downButton = document.getElementById('down-button');
       const leftButton = document.getElementById('left-button');
       const rightButton = document.getElementById('right-button');
+      const settingsButton = document.createElement('div');
+      settingsButton.textContent = '⚙️';
+      settingsButton.style.fontSize = '24px';
+      settingsButton.style.cursor = 'pointer';
+      settingsButton.style.position = 'fixed';
+      settingsButton.style.top = '10px';
+      settingsButton.style.right = '10px';
       
+      settingsButton.addEventListener('click', showSettingsMenu);
       upButton.addEventListener('click', handleButtonClick);
       downButton.addEventListener('click', handleButtonClick);
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
+      
+      gameContainer.appendChild(settingsButton);
+      hideSettingsMenu();
+      applySettings();
     });
   </script>
 </body>
