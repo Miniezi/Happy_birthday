@@ -208,11 +208,10 @@
       
       function handleWindowResize() {
         const windowWidth = window.innerWidth;
-        if (windowWidth <= 768) {
-          gameContainer.style.transform = 'scale(0.9)';
-        } else {
-          gameContainer.style.transform = 'scale(1)';
-        }
+        const windowHeight = window.innerHeight;
+        const gameContainerSize = Math.min(windowWidth, windowHeight) * 0.8;
+        gameContainer.style.width = gameContainerSize + 'px';
+        gameContainer.style.height = gameContainerSize + 'px';
       }
       
       difficultyToggle.addEventListener('change', handleDifficultyToggle);
@@ -232,6 +231,8 @@
       downButton.addEventListener('click', handleButtonClick);
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
+      
+      handleWindowResize();
     });
   </script>
 </body>
