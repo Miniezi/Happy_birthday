@@ -11,15 +11,30 @@
       text-align: center;
     }
     
+    #game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+    
     #game-board {
+      position: relative;
       background-color: #fff;
       border: 1px solid #ccc;
-      width: 400px;
-      height: 400px;
-      margin: 0 auto;
+      width: 90vw;
+      max-width: 450px;
+      height: 90vw;
+      max-height: 450px;
+      margin: 20px 0;
     }
     
     .button-container {
+      display: flex;
+      justify-content: center;
       margin-top: 20px;
     }
     
@@ -40,19 +55,21 @@
 <body>
   <h1>Змейка</h1>
   
-  <div id="game-board"></div>
-  
-  <div class="button-container">
-    <div class="button" id="up-button">↑</div>
-  </div>
-  
-  <div class="button-container">
-    <div class="button" id="left-button">←</div>
-    <div class="button" id="right-button">→</div>
-  </div>
-  
-  <div class="button-container">
-    <div class="button" id="down-button">↓</div>
+  <div id="game-container">
+    <div id="game-board"></div>
+    
+    <div class="button-container">
+      <div class="button" id="up-button">↑</div>
+    </div>
+    
+    <div class="button-container">
+      <div class="button" id="left-button">←</div>
+      <div class="button" id="right-button">→</div>
+    </div>
+    
+    <div class="button-container">
+      <div class="button" id="down-button">↓</div>
+    </div>
   </div>
   
   <script>
@@ -66,7 +83,7 @@
       const cellSize = 20;
       const totalCells = 20;
       
-      let snake = [{ x: 10, y: 10 }];
+      let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
       let direction = { x: 0, y: 0 };
       
       function drawSnake() {
@@ -125,7 +142,7 @@
       }
       
       function resetGame() {
-        snake = [{ x: 10, y: 10 }];
+        snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
         direction = { x: 0, y: 0 };
         drawSnake();
       }
