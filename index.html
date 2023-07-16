@@ -32,6 +32,13 @@
       margin: 20px 0;
     }
     
+    #snake {
+      position: absolute;
+      background-color: #000;
+      width: 30px;
+      height: 30px;
+    }
+    
     .button-container {
       display: flex;
       justify-content: center;
@@ -51,6 +58,12 @@
       margin: 0 10px;
     }
     
+    #score {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
     #message {
       font-size: 24px;
       font-weight: bold;
@@ -62,7 +75,9 @@
   <h1>Змейка</h1>
   
   <div id="game-container">
-    <div id="game-board"></div>
+    <div id="game-board">
+      <div id="snake"></div>
+    </div>
     
     <div class="button-container">
       <div class="button" id="up-button">↑</div>
@@ -83,11 +98,14 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gameBoard = document.getElementById('game-board');
+      const snakeElement = document.getElementById('snake');
       const buttons = document.querySelectorAll('.button');
+      const startButton = document.getElementById('start-button');
       const messageElement = document.getElementById('message');
 
-      const cellSize = 20;
-      const totalCells = 22;
+      const gameSize = 450;
+      const cellSize = 30;
+      const totalCells = gameSize / cellSize;
       const initialSnakeLength = 3;
       const maxSnakeSize = 15;
 
@@ -226,6 +244,7 @@
         direction = { x: 0, y: 0 };
         score = 0;
         gameOver = false;
+        startButton.disabled = false;
         gameStarted = false;
         clearBoard();
         showMessage('');
@@ -234,6 +253,35 @@
       buttons.forEach(button => {
         button.addEventListener('click', handleButtonClick);
       });
+
+      startButton.addEventListener('click', () => {
+        if (!gameStarted) {
+          resetGame();
+          const snakeStartPosition = Math.floor(totalCells / 2);
+          snake.push({ x: snakeStartPosition, y: snakeStartPosition });
+          for (let i = 1; i < initialSnakeLength; i++) {
+            snake.push({ x: snake[i - 1].x - 1, y: snake[i - 1].y });
+          }
+          placeFood();
+          updateScore();
+          gameInterval = setInterval(gameLoop, 150);
+          gameStarted = true;
+        }
+      });
+
+      function gameLoop() {
+        if (checkCollision()) {
+          clearInterval(gameInterval);
+          gameOver = true;
+          showMessage('Игра окончена! Очки: ' + score);
+          return;
+        }
+
+        clearBoard();
+        updateSnake();
+        drawSnake();
+        drawFood();
+      }
 
       document.addEventListener('keydown', event => {
         if (gameStarted && !gameOver) {
@@ -261,37 +309,6 @@
           }
         }
       });
-
-      function startGame() {
-        if (!gameStarted) {
-          resetGame();
-          const snakeStartPosition = Math.floor(totalCells / 2);
-          snake.push({ x: snakeStartPosition, y: snakeStartPosition });
-          for (let i = 1; i < initialSnakeLength; i++) {
-            snake.push({ x: snake[i - 1].x - 1, y: snake[i - 1].y });
-          }
-          placeFood();
-          updateScore();
-          gameInterval = setInterval(gameLoop, 150);
-          gameStarted = true;
-        }
-      }
-
-      function gameLoop() {
-        if (checkCollision()) {
-          clearInterval(gameInterval);
-          gameOver = true;
-          showMessage('Игра окончена! Очки: ' + score);
-          return;
-        }
-
-        clearBoard();
-        updateSnake();
-        drawSnake();
-        drawFood();
-      }
-
-      startButton.addEventListener('click', startGame);
     });
   </script>
 </body>
