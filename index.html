@@ -268,6 +268,34 @@
         showStartButton();
       }
       
+      function showGameOverMenu() {
+        gameOverMenu.style.display = 'block';
+      }
+      
+      function hideGameOverMenu() {
+        gameOverMenu.style.display = 'none';
+      }
+      
+      function gameOver() {
+        clearInterval(gameInterval);
+        showGameOverMenu();
+        startButton.style.display = 'block';
+      }
+      
+      function resetGame() {
+        snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
+        direction = { x: 0, y: 0 };
+        score = 0;
+        placeFood();
+        updateScore();
+        seconds = 0;
+        timerElement.textContent = 'Время: 0 сек';
+        drawSnake();
+        hideGameOverMenu();
+        startGame();
+        startButton.style.display = 'none';
+      }
+      
       startButton.addEventListener('click', startButtonClick);
       upButton.addEventListener('click', handleButtonClick);
       downButton.addEventListener('click', handleButtonClick);
@@ -276,23 +304,7 @@
       restartButton.addEventListener('click', resetGame);
       applySettingsButton.addEventListener('click', applySettings);
       exitSettingsButton.addEventListener('click', exitSettingsMenu);
-      
-      const settingsButton = document.createElement('div');
-      settingsButton.textContent = '⚙️';
-      settingsButton.style.fontSize = '24px';
-      settingsButton.style.cursor = 'pointer';
-      settingsButton.style.position = 'fixed';
-      settingsButton.style.top = '10px';
-      settingsButton.style.right = '10px';
-      
-      settingsButton.addEventListener('click', showSettingsMenu);
-      
-      gameContainer.appendChild(settingsButton);
-      
-      applySettings();
-      hideSettingsMenu();
-      hideStartButton();
-      
+
       // Добавленная функциональность
       
       function handleKeyboardInput(event) {
