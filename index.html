@@ -3,6 +3,8 @@
 <head>
   <title>Змейка</title>
   <style>
+    /* Стили для игры */
+    /* ... */
   </style>
 </head>
 <body>
@@ -10,56 +12,19 @@
   
   <div id="game-container">
     <div id="game-board"></div>
-    
-    <div id="score">Очки: 0</div>
-    
-    <div class="button-container">
-      <div class="button" id="up-button">↑</div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="left-button">←</div>
-      <div class="button" id="right-button">→</div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="down-button">↓</div>
-    </div>
-    
-    <div id="game-over-menu">
-      <h2>Игра окончена!</h2>
-      <p>Набранные очки: <span id="game-over-score">0</span></p>
-      <button id="restart-button">Начать заново</button>
-    </div>
-    
-    <div id="difficulty-toggle">
-      <label for="difficulty">Уровень сложности:</label>
-      <select id="difficulty">
-        <option value="normal">Нормальный</option>
-        <option value="easy">Легкий</option>
-      </select>
-    </div>
   </div>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gameContainer = document.getElementById('game-container');
       const gameBoard = document.getElementById('game-board');
-      const scoreElement = document.getElementById('score');
-      const gameOverMenu = document.getElementById('game-over-menu');
-      const gameOverScoreElement = document.getElementById('game-over-score');
-      const restartButton = document.getElementById('restart-button');
-      const difficultyToggle = document.getElementById('difficulty');
       
       const cellSize = 15;
       const totalCells = 20;
-      let collisionEnabled = true;
-      let wallsEnabled = true;
       
       let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
       let direction = { x: 0, y: 0 };
       let food = { x: 0, y: 0 };
-      let score = 0;
       let gameInterval;
       
       function getRandomPosition() {
@@ -103,21 +68,14 @@
       function updateSnake() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
         
-        if (collisionEnabled && wallsEnabled && (newHead.x < 0 || newHead.x >= totalCells || newHead.y < 0 || newHead.y >= totalCells)) {
-          gameOver();
-          return;
-        }
-        
         if (newHead.x < 0) newHead.x = totalCells - 1;
         if (newHead.x >= totalCells) newHead.x = 0;
         if (newHead.y < 0) newHead.y = totalCells - 1;
         if (newHead.y >= totalCells) newHead.y = 0;
         
         if (isSnakeCollision(newHead.x, newHead.y)) {
-          if (difficultyToggle.value === 'easy') {
-            gameOver();
-            return;
-          }
+          gameOver();
+          return;
         }
         
         snake.unshift(newHead);
@@ -129,12 +87,8 @@
       }
       
       function handleFoodCollision() {
-        score++;
         placeFood();
-        updateScore();
-        if (difficultyToggle.value === 'easy' && snake.length < 15) {
-          snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y });
-        }
+        drawFood();
       }
       
       function checkFoodCollision() {
@@ -142,95 +96,18 @@
         return head.x === food.x && head.y === food.y;
       }
       
-      function updateScore() {
-        scoreElement.textContent = 'Очки: ' + score;
-      }
-      
-      function handleButtonClick(event) {
-        const buttonId = event.target.id;
-        switch (buttonId) {
-          case 'up-button':
-            if (direction.y !== 1) direction = { x: 0, y: -1 };
-            break;
-          case 'down-button':
-            if (direction.y !== -1) direction = { x: 0, y: 1 };
-            break;
-          case 'left-button':
-            if (direction.x !== 1) direction = { x: -1, y: 0 };
-            break;
-          case 'right-button':
-            if (direction.x !== -1) direction = { x: 1, y: 0 };
-            break;
-        }
-      }
-      
-      function showGameOverMenu() {
-        gameOverScoreElement.textContent = score;
-        gameOverMenu.style.display = 'block';
-      }
-      
-      function hideGameOverMenu() {
-        gameOverMenu.style.display = 'none';
-      }
-      
-      function gameOver() {
-        clearInterval(gameInterval);
-        showGameOverMenu();
-      }
-      
-      function resetGame() {
-        snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
-        direction = { x: 0, y: 0 };
-        score = 0;
-        placeFood();
-        updateScore();
+      function gameLoop() {
+        updateSnake();
         drawSnake();
-        hideGameOverMenu();
-        startGame();
       }
       
       function startGame() {
+        placeFood();
+        drawFood();
         gameInterval = setInterval(gameLoop, 200);
       }
       
-      function handleDifficultyToggle() {
-        const selectedDifficulty = difficultyToggle.value;
-        if (selectedDifficulty === 'easy') {
-          collisionEnabled = false;
-          wallsEnabled = false;
-        } else {
-          collisionEnabled = true;
-          wallsEnabled = true;
-        }
-      }
-      
-      function handleWindowResize() {
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const gameContainerSize = Math.min(windowWidth, windowHeight) * 0.8;
-        gameContainer.style.width = gameContainerSize + 'px';
-        gameContainer.style.height = gameContainerSize + 'px';
-      }
-      
-      difficultyToggle.addEventListener('change', handleDifficultyToggle);
-      window.addEventListener('resize', handleWindowResize);
-      
       startGame();
-      
-      restartButton.addEventListener('click', resetGame);
-      
-      // Button event listeners
-      const upButton = document.getElementById('up-button');
-      const downButton = document.getElementById('down-button');
-      const leftButton = document.getElementById('left-button');
-      const rightButton = document.getElementById('right-button');
-      
-      upButton.addEventListener('click', handleButtonClick);
-      downButton.addEventListener('click', handleButtonClick);
-      leftButton.addEventListener('click', handleButtonClick);
-      rightButton.addEventListener('click', handleButtonClick);
-      
-      handleWindowResize();
     });
   </script>
 </body>
