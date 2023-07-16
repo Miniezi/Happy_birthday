@@ -11,37 +11,15 @@
       text-align: center;
     }
     
-    #game-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
-    
     #game-board {
-      position: relative;
       background-color: #fff;
       border: 1px solid #ccc;
-      width: 90vw;
-      max-width: 450px;
-      height: 90vw;
-      max-height: 450px;
-      margin: 20px 0;
-    }
-    
-    #snake {
-      position: absolute;
-      background-color: #000;
-      width: 30px;
-      height: 30px;
+      width: 400px;
+      height: 400px;
+      margin: 0 auto;
     }
     
     .button-container {
-      display: flex;
-      justify-content: center;
       margin-top: 20px;
     }
     
@@ -57,258 +35,87 @@
       cursor: pointer;
       margin: 0 10px;
     }
-    
-    #score {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    
-    #message {
-      font-size: 24px;
-      font-weight: bold;
-      margin-top: 20px;
-    }
   </style>
 </head>
 <body>
   <h1>Змейка</h1>
   
-  <div id="game-container">
-    <div id="game-board">
-      <div id="snake"></div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="up-button">↑</div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="left-button">←</div>
-      <div class="button" id="right-button">→</div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="down-button">↓</div>
-    </div>
-    
-    <div id="message"></div>
+  <div id="game-board"></div>
+  
+  <div class="button-container">
+    <div class="button" id="up-button">↑</div>
+  </div>
+  
+  <div class="button-container">
+    <div class="button" id="left-button">←</div>
+    <div class="button" id="right-button">→</div>
+  </div>
+  
+  <div class="button-container">
+    <div class="button" id="down-button">↓</div>
   </div>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gameBoard = document.getElementById('game-board');
-      const snakeElement = document.getElementById('snake');
-      const buttons = document.querySelectorAll('.button');
-      const startButton = document.getElementById('start-button');
-      const messageElement = document.getElementById('message');
-
-      const gameSize = 450;
-      const cellSize = 30;
-      const totalCells = gameSize / cellSize;
-      const initialSnakeLength = 3;
-      const maxSnakeSize = 15;
-
-      let snake = [];
+      const upButton = document.getElementById('up-button');
+      const downButton = document.getElementById('down-button');
+      const leftButton = document.getElementById('left-button');
+      const rightButton = document.getElementById('right-button');
+      
+      const cellSize = 20;
+      const totalCells = 20;
+      
+      let snake = [{ x: 10, y: 10 }];
       let direction = { x: 0, y: 0 };
-      let food = { x: 0, y: 0 };
-      let score = 0;
-      let gameInterval = null;
-      let gameStarted = false;
-      let gameOver = false;
-
-      function getRandomPosition() {
-        return Math.floor(Math.random() * totalCells);
-      }
-
-      function placeFood() {
-        let foodX;
-        let foodY;
-        do {
-          foodX = getRandomPosition();
-          foodY = getRandomPosition();
-        } while (isSnakeCollision(foodX, foodY));
-
-        food = { x: foodX, y: foodY };
-      }
-
-      function isSnakeCollision(x, y) {
-        return snake.some(segment => segment.x === x && segment.y === y);
-      }
-
-      function updateSnake() {
-        const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-        snake.unshift(newHead);
-
-        if (checkFoodCollision()) {
-          handleFoodCollision();
-        } else {
-          snake.pop();
-        }
-      }
-
+      
       function drawSnake() {
+        gameBoard.innerHTML = '';
         snake.forEach(segment => {
           const segmentElement = document.createElement('div');
-          segmentElement.style.position = 'absolute';
           segmentElement.style.width = cellSize + 'px';
           segmentElement.style.height = cellSize + 'px';
+          segmentElement.style.backgroundColor = '#000';
+          segmentElement.style.position = 'absolute';
           segmentElement.style.left = segment.x * cellSize + 'px';
           segmentElement.style.top = segment.y * cellSize + 'px';
-          segmentElement.style.backgroundColor = '#000';
           gameBoard.appendChild(segmentElement);
         });
       }
-
-      function drawFood() {
-        const foodElement = document.createElement('div');
-        foodElement.style.position = 'absolute';
-        foodElement.style.width = cellSize + 'px';
-        foodElement.style.height = cellSize + 'px';
-        foodElement.style.left = food.x * cellSize + 'px';
-        foodElement.style.top = food.y * cellSize + 'px';
-        foodElement.style.backgroundColor = '#f00';
-        gameBoard.appendChild(foodElement);
+      
+      function updateSnake() {
+        const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+        snake.unshift(newHead);
+        snake.pop();
       }
-
-      function clearBoard() {
-        while (gameBoard.firstChild) {
-          gameBoard.firstChild.remove();
-        }
-      }
-
+      
       function handleButtonClick(event) {
-        if (!gameStarted) {
-          return;
-        }
         const buttonId = event.target.id;
         switch (buttonId) {
           case 'up-button':
-            if (direction.y !== 1) {
-              direction = { x: 0, y: -1 };
-            }
+            direction = { x: 0, y: -1 };
             break;
           case 'down-button':
-            if (direction.y !== -1) {
-              direction = { x: 0, y: 1 };
-            }
+            direction = { x: 0, y: 1 };
             break;
           case 'left-button':
-            if (direction.x !== 1) {
-              direction = { x: -1, y: 0 };
-            }
+            direction = { x: -1, y: 0 };
             break;
           case 'right-button':
-            if (direction.x !== -1) {
-              direction = { x: 1, y: 0 };
-            }
+            direction = { x: 1, y: 0 };
             break;
         }
       }
-
-      function checkCollision() {
-        const head = snake[0];
-        return (
-          isSnakeCollision(head.x, head.y) ||
-          head.x < 0 ||
-          head.x >= totalCells ||
-          head.y < 0 ||
-          head.y >= totalCells
-        );
-      }
-
-      function checkFoodCollision() {
-        const head = snake[0];
-        return head.x === food.x && head.y === food.y;
-      }
-
-      function handleFoodCollision() {
-        score++;
-        if (snake.length < maxSnakeSize) {
-          snake.push({});
-        }
-        placeFood();
-        updateScore();
-      }
-
-      function updateScore() {
-        messageElement.textContent = 'Очки: ' + score;
-      }
-
-      function showMessage(message) {
-        messageElement.textContent = message;
-      }
-
-      function resetGame() {
-        snake = [];
-        direction = { x: 0, y: 0 };
-        score = 0;
-        gameOver = false;
-        startButton.disabled = false;
-        gameStarted = false;
-        clearBoard();
-        showMessage('');
-      }
-
-      buttons.forEach(button => {
-        button.addEventListener('click', handleButtonClick);
-      });
-
-      startButton.addEventListener('click', () => {
-        if (!gameStarted) {
-          resetGame();
-          const snakeStartPosition = Math.floor(totalCells / 2);
-          snake.push({ x: snakeStartPosition, y: snakeStartPosition });
-          for (let i = 1; i < initialSnakeLength; i++) {
-            snake.push({ x: snake[i - 1].x - 1, y: snake[i - 1].y });
-          }
-          placeFood();
-          updateScore();
-          gameInterval = setInterval(gameLoop, 150);
-          gameStarted = true;
-        }
-      });
-
-      function gameLoop() {
-        if (checkCollision()) {
-          clearInterval(gameInterval);
-          gameOver = true;
-          showMessage('Игра окончена! Очки: ' + score);
-          return;
-        }
-
-        clearBoard();
+      
+      setInterval(() => {
         updateSnake();
         drawSnake();
-        drawFood();
-      }
-
-      document.addEventListener('keydown', event => {
-        if (gameStarted && !gameOver) {
-          switch (event.key) {
-            case 'ArrowUp':
-              if (direction.y !== 1) {
-                direction = { x: 0, y: -1 };
-              }
-              break;
-            case 'ArrowDown':
-              if (direction.y !== -1) {
-                direction = { x: 0, y: 1 };
-              }
-              break;
-            case 'ArrowLeft':
-              if (direction.x !== 1) {
-                direction = { x: -1, y: 0 };
-              }
-              break;
-            case 'ArrowRight':
-              if (direction.x !== -1) {
-                direction = { x: 1, y: 0 };
-              }
-              break;
-          }
-        }
-      });
+      }, 200);
+      
+      upButton.addEventListener('click', handleButtonClick);
+      downButton.addEventListener('click', handleButtonClick);
+      leftButton.addEventListener('click', handleButtonClick);
+      rightButton.addEventListener('click', handleButtonClick);
     });
   </script>
 </body>
