@@ -25,7 +25,7 @@
     
     #game-board {
       position: relative;
-      background-color: #fff;
+      background-color: #008000;
       border: 1px solid #000;
       margin: 20px 0;
       border-radius: 5px;
@@ -160,6 +160,7 @@
     
     <div class="button-container">
       <div class="button" id="left-button">←</div>
+      <div class="button" id="start-button">Старт</div>
       <div class="button" id="right-button">→</div>
     </div>
     
@@ -199,10 +200,6 @@
       <h2>Игра окончена!</h2>
       <p>Набранные очки: <span id="game-over-score">0</span></p>
       <button id="restart-button">Начать заново</button>
-    </div>
-    
-    <div class="button-container">
-      <button id="start-button" class="button">Старт</button>
     </div>
   </div>
   
@@ -338,6 +335,7 @@
       function showGameOverMenu() {
         gameOverScoreElement.textContent = score;
         gameOverMenu.style.display = 'block';
+        startButton.style.display = 'block';
       }
       
       function hideGameOverMenu() {
@@ -347,7 +345,6 @@
       function gameOver() {
         clearInterval(gameInterval);
         showGameOverMenu();
-        startButton.style.display = 'block';
       }
       
       function resetGame() {
@@ -360,8 +357,10 @@
         timerElement.textContent = 'Время: 0 сек';
         drawSnake();
         hideGameOverMenu();
-        startGame();
         startButton.style.display = 'none';
+        isGameStarted = false;
+        startButton.disabled = false;
+        gameBoard.classList.remove('inactive');
       }
       
       function applySettings() {
@@ -380,7 +379,7 @@
       }
       
       function gameLoop() {
-        if (isMoving) {
+        if (isMoving && isGameStarted) {
           updateSnake();
           if (checkCollision()) {
             gameOver();
@@ -413,6 +412,8 @@
         startButton.style.display = 'none';
         isMoving = true;
         isGameStarted = true;
+        startButton.disabled = true;
+        gameBoard.classList.add('inactive');
       }
       
       restartButton.addEventListener('click', resetGame);
