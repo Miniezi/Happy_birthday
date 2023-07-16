@@ -107,15 +107,48 @@
         }
       }
       
-      setInterval(() => {
-        updateSnake();
+      function checkCollision() {
+        const head = snake[0];
+        return (
+          head.x < 0 ||
+          head.x >= totalCells ||
+          head.y < 0 ||
+          head.y >= totalCells ||
+          snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
+        );
+      }
+      
+      function gameOver() {
+        clearInterval(gameInterval);
+        alert('Игра окончена!');
+        resetGame();
+      }
+      
+      function resetGame() {
+        snake = [{ x: 10, y: 10 }];
+        direction = { x: 0, y: 0 };
         drawSnake();
-      }, 200);
+      }
+      
+      function gameLoop() {
+        updateSnake();
+        if (checkCollision()) {
+          gameOver();
+          return;
+        }
+        drawSnake();
+      }
+      
+      function startGame() {
+        gameInterval = setInterval(gameLoop, 200);
+      }
       
       upButton.addEventListener('click', handleButtonClick);
       downButton.addEventListener('click', handleButtonClick);
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
+      
+      startGame();
     });
   </script>
 </body>
