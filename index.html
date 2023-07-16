@@ -55,6 +55,37 @@
       font-size: 24px;
       margin-top: 10px;
     }
+    
+    #game-over-menu {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 999;
+    }
+    
+    #game-over-menu h2 {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    
+    #game-over-menu p {
+      margin: 0;
+      margin-bottom: 20px;
+    }
+    
+    #restart-button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -77,11 +108,22 @@
     <div class="button-container">
       <div class="button" id="down-button">↓</div>
     </div>
+    
+    <div id="game-over-menu">
+      <h2>Игра окончена!</h2>
+      <p>Набранные очки: <span id="game-over-score">0</span></p>
+      <button id="restart-button">Начать заново</button>
+    </div>
   </div>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      const gameContainer = document.getElementById('game-container');
       const gameBoard = document.getElementById('game-board');
+      const scoreElement = document.getElementById('score');
+      const gameOverMenu = document.getElementById('game-over-menu');
+      const gameOverScoreElement = document.getElementById('game-over-score');
+      const restartButton = document.getElementById('restart-button');
       
       const cellSize = 20;
       const totalCells = 20;
@@ -90,6 +132,7 @@
       let direction = { x: 0, y: 0 };
       let food = { x: 0, y: 0 };
       let score = 0;
+      let gameInterval;
       
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
@@ -157,7 +200,6 @@
       }
       
       function updateScore() {
-        const scoreElement = document.getElementById('score');
         scoreElement.textContent = 'Очки: ' + score;
       }
       
@@ -165,16 +207,16 @@
         const buttonId = event.target.id;
         switch (buttonId) {
           case 'up-button':
-            direction = { x: 0, y: -1 };
+            if (direction.y !== 1) direction = { x: 0, y: -1 };
             break;
           case 'down-button':
-            direction = { x: 0, y: 1 };
+            if (direction.y !== -1) direction = { x: 0, y: 1 };
             break;
           case 'left-button':
-            direction = { x: -1, y: 0 };
+            if (direction.x !== 1) direction = { x: -1, y: 0 };
             break;
           case 'right-button':
-            direction = { x: 1, y: 0 };
+            if (direction.x !== -1) direction = { x: 1, y: 0 };
             break;
         }
       }
@@ -190,10 +232,18 @@
         );
       }
       
+      function showGameOverMenu() {
+        gameOverScoreElement.textContent = score;
+        gameOverMenu.style.display = 'block';
+      }
+      
+      function hideGameOverMenu() {
+        gameOverMenu.style.display = 'none';
+      }
+      
       function gameOver() {
         clearInterval(gameInterval);
-        alert('Игра окончена!');
-        resetGame();
+        showGameOverMenu();
       }
       
       function resetGame() {
@@ -203,6 +253,8 @@
         placeFood();
         updateScore();
         drawSnake();
+        hideGameOverMenu();
+        startGame();
       }
       
       function gameLoop() {
@@ -216,12 +268,12 @@
       }
       
       function startGame() {
-        placeFood();
-        updateScore();
         gameInterval = setInterval(gameLoop, 200);
       }
       
       startGame();
+      
+      restartButton.addEventListener('click', resetGame);
       
       // Button event listeners
       const upButton = document.getElementById('up-button');
