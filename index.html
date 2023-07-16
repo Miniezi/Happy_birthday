@@ -87,10 +87,7 @@
         gameBoard.innerHTML = '';
         snake.forEach(segment => {
           const segmentElement = document.createElement('div');
-          segmentElement.style.width = cellSize + 'px';
-          segmentElement.style.height = cellSize + 'px';
-          segmentElement.style.backgroundColor = '#000';
-          segmentElement.style.position = 'absolute';
+          segmentElement.className = 'snake-segment';
           segmentElement.style.left = segment.x * cellSize + 'px';
           segmentElement.style.top = segment.y * cellSize + 'px';
           gameBoard.appendChild(segmentElement);
@@ -99,10 +96,7 @@
       
       function drawFood() {
         const foodElement = document.createElement('div');
-        foodElement.style.width = cellSize + 'px';
-        foodElement.style.height = cellSize + 'px';
-        foodElement.style.backgroundColor = '#f00';
-        foodElement.style.position = 'absolute';
+        foodElement.className = 'food';
         foodElement.style.left = food.x * cellSize + 'px';
         foodElement.style.top = food.y * cellSize + 'px';
         gameBoard.appendChild(foodElement);
@@ -197,12 +191,6 @@
         startGame();
       }
       
-      function gameLoop() {
-        updateSnake();
-        drawSnake();
-        drawFood();
-      }
-      
       function startGame() {
         gameInterval = setInterval(gameLoop, 200);
       }
@@ -218,7 +206,17 @@
         }
       }
       
+      function handleWindowResize() {
+        const windowWidth = window.innerWidth;
+        if (windowWidth <= 768) {
+          gameContainer.style.transform = 'scale(0.9)';
+        } else {
+          gameContainer.style.transform = 'scale(1)';
+        }
+      }
+      
       difficultyToggle.addEventListener('change', handleDifficultyToggle);
+      window.addEventListener('resize', handleWindowResize);
       
       startGame();
       
