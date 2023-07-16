@@ -1,132 +1,337 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Мой сайт</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-    
-    nav {
-      background-color: #f2f2f2;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    nav ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-    
-    nav ul li {
-      margin-bottom: 10px;
-    }
-    
-    nav ul li a {
-      display: block;
-      text-decoration: none;
-      color: #333;
-      padding: 10px;
-      background-color: #ccc;
-      border-radius: 5px;
-      width: 200%;
-    }
-    
-    main {
-      padding: 20px;
-    }
-    
-    section {
-      margin-bottom: 20px;
-      display: none;
-    }
-    
-    footer {
-      background-color: #333;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-    }
-    
-    #section2 {
-      background-image: url(images/tractor.jpg);
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      padding: 20px;
-      color: #fff;
-    }
-  </style>
+    <title>Змейка</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            color: #333333;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        h1 {
+            color: #008080;
+            transition: color 0.3s ease;
+        }
+
+        #game-board {
+            width: 400px;
+            height: 400px;
+            border: 1px solid #333333;
+            background-color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+        #score {
+            color: #008080;
+            transition: color 0.3s ease;
+        }
+
+        #game-over {
+            color: #FF0000;
+            transition: color 0.3s ease;
+        }
+
+        #score-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: opacity 0.3s ease;
+        }
+
+        #score-table th, #score-table td {
+            border: 1px solid #333333;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #score-table th {
+            background-color: #008080;
+            color: #ffffff;
+        }
+
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            background-color: #f3f3f3;
+            animation: bgAnimation 10s linear infinite;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            border-radius: 10px;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes bgAnimation {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 0; }
+        }
+
+        #snake {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 30px;
+            background-image: url('snake.gif');
+            background-repeat: repeat-x;
+            animation: snakeAnimation 3s linear infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes snakeAnimation {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 0; }
+        }
+
+        #menu-title {
+            position: relative;
+            font-size: 36px;
+            color: #333333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: titleAnimation 5s linear infinite;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        @keyframes titleAnimation {
+            0% { transform: translateX(-50%) rotate(0deg); }
+            50% { transform: translateX(50%) rotate(180deg); }
+            100% { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #008080;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #333333;
+            margin-top: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .header {
+            background-color: #008080;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Мой сайт</h1>
-  </header>
-  
-  <nav>
-    <ul>
-      <li><a href="#section1">Вкладка 1</a></li>
-      <li><a href="#" onclick="openTab('section2')">Трактора</a></li>
-    </ul>
-  </nav>
-  
-  <main>
-    <section id="section1">
-      <h2>Содержимое вкладки 1</h2>
-      <p>Информация о лошадях:</p>
-      <ul>
-        <li>Лошадь (лат. Equus caballus) — млекопитающее, одомашненный подвид дикой лошади семейства непарнокопытных.</li>
-        <li>Лошади долгое время служили человеку верой и правдой, были неотъемлемой частью его жизни.</li>
-        <li>Лошади являются одними из наиболее полезных животных для человека. Их используют для перевозки грузов и людей, сельского хозяйства, спорта и развлечений.</li>
-      </ul>
-    </section>
-    
-    <section id="section2">
-      <h2>Содержимое вкладки "Трактора"</h2>
-      <p>Информация о тракторах:</p>
-      <ul>
-        <li>Трактор — мощная сельскохозяйственная или строительная самоходная машина, предназначенная для выполнения различных работ.</li>
-        <li>Тракторы широко используются в сельском хозяйстве для пахоты, посева, уборки урожая, а также в строительстве, грузоперевозках и других отраслях.</li>
-      </ul>
-    </section>
-  </main>
-  
-  <footer>
-    <p>&copy; 2023 Мой сайт. Все права защищены.</p>
-  </footer>
-  
-  <script>
-    function openTab(tabId) {
-      var tabs = document.querySelectorAll("nav ul li a");
-      var sections = document.querySelectorAll("section");
-      
-      tabs.forEach(function(tab) {
-        tab.classList.remove("active");
-      });
-      
-      sections.forEach(function(section) {
-        section.style.display = "none";
-      });
-      
-      var selectedTab = document.querySelector("a[href='#" + tabId + "']");
-      var selectedSection = document.querySelector("#" + tabId);
-      
-      selectedTab.classList.add("active");
-      selectedSection.style.display = "block";
-    }
-  </script>
+    <div class="header">
+        <p>Сделано при помощи GPT пользователем Graph</p>
+    </div>
+    <h1>Змейка</h1>
+    <div id="game-board"></div>
+    <h2 id="score">Score: 0</h2>
+    <h2 id="game-over" style="display: none;"></h2>
+    <h2>Previous Scores:</h2>
+    <table id="score-table">
+        <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+        </tr>
+    </table>
+    <div id="menu">
+        <h2 id="menu-title">Snake Game Menu</h2>
+        <div id="snake"></div>
+        <input type="text" id="name-input" placeholder="Enter your name">
+        <button onclick="startGame()">Start</button>
+    </div>
+
+    <!-- Звуковые эффекты -->
+    <audio id="game-over-sound">
+        <source src="game-over.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="start-game-sound">
+        <source src="start-game.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Получаем ссылки на элементы страницы
+        const gameBoard = document.getElementById('game-board');
+        const scoreElement = document.getElementById('score');
+        const gameOverMessage = document.getElementById('game-over');
+        const scoreTable = document.getElementById('score-table');
+        const menu = document.getElementById('menu');
+        const gameOverSound = document.getElementById('game-over-sound');
+        const startGameSound = document.getElementById('start-game-sound');
+
+        // Задаем ширину и высоту игрового поля (в ячейках)
+        const boardWidth = 20;
+        const boardHeight = 20;
+
+        // Создаем переменные для хранения направления движения змейки, текущего счета, имени игрока и игрового состояния
+        let snakeDirection = 'right';
+        let score = 0;
+        let playerName = '';
+        let gameRunning = false;
+
+        // Создаем переменные для хранения координат яблока
+        let appleX;
+        let appleY;
+
+        // Создаем массив для хранения предыдущих счетов и имен
+        let previousScores = [];
+
+        // Отрисовываем игровое поле
+        for (let row = 0; row < boardHeight; row++) {
+            for (let col = 0; col < boardWidth; col++) {
+                const cell = document.createElement('div');
+                cell.style.width = `${gameBoard.offsetWidth / boardWidth}px`;
+                cell.style.height = `${gameBoard.offsetHeight / boardHeight}px`;
+                cell.style.border = '1px solid #333333';
+                cell.style.boxSizing = 'border-box';
+                gameBoard.appendChild(cell);
+            }
+        }
+
+        // Функция для генерации случайного числа в заданном диапазоне
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Функция для отображения яблока на игровом поле
+        function drawApple() {
+            const appleCellIndex = appleY * boardWidth + appleX;
+            const appleCell = gameBoard.children[appleCellIndex];
+            appleCell.style.backgroundColor = 'red';
+        }
+
+        // Функция для генерации нового яблока на игровом поле
+        function generateApple() {
+            // Генерируем случайные координаты для яблока
+            appleX = getRandomNumber(0, boardWidth - 1);
+            appleY = getRandomNumber(0, boardHeight - 1);
+
+            const appleCellIndex = appleY * boardWidth + appleX;
+            const appleCell = gameBoard.children[appleCellIndex];
+
+            // Если сгенерированная ячейка уже занята змейкой, генерируем новое яблоко
+            if (appleCell.style.backgroundColor === 'green') {
+                generateApple();
+                return;
+            }
+
+            // Отображаем яблоко на игровом поле
+            drawApple();
+        }
+
+        // Функция для обновления счета
+        function updateScore() {
+            scoreElement.textContent = `Score: ${score}`;
+        }
+
+        // Функция для проверки столкновения змейки с границами поля
+        function checkBoundaryCollision(newHeadX, newHeadY) {
+            return (
+                newHeadX < 0 ||
+                newHeadY < 0 ||
+                newHeadX >= boardWidth ||
+                newHeadY >= boardHeight
+            );
+        }
+
+        // Функция для отображения сообщения об окончании игры
+        function showGameOverMessage() {
+            gameOverMessage.textContent = `Game Over! Your Score: ${score}`;
+            gameOverMessage.style.display = 'block';
+            recordScore();
+            resetGame();
+            gameOverSound.play(); // Воспроизведение звукового эффекта при окончании игры
+        }
+
+        // Функция для записи счета и имени в таблицу предыдущих счетов
+        function recordScore() {
+            const record = {
+                name: playerName,
+                score: score
+            };
+            previousScores.push(record);
+            previousScores.sort((a, b) => b.score - a.score);
+            updateScoreTable();
+        }
+
+        // Функция для обновления таблицы предыдущих счетов
+        function updateScoreTable() {
+            const tableBody = document.createElement('tbody');
+            for (let i = 0; i < previousScores.length; i++) {
+                const row = document.createElement('tr');
+                const rankCell = document.createElement('td');
+                const nameCell = document.createElement('td');
+                const scoreCell = document.createElement('td');
+                rankCell.textContent = i + 1;
+                nameCell.textContent = previousScores[i].name;
+                scoreCell.textContent = previousScores[i].score;
+                row.appendChild(rankCell);
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                tableBody.appendChild(row);
+            }
+            scoreTable.innerHTML = '';
+            scoreTable.appendChild(tableBody);
+        }
+
+        // Функция для сброса игры
+        function resetGame() {
+            score = 0;
+            gameRunning = false;
+            updateScore();
+            menu.style.display = 'flex';
+        }
+
+        // Функция для запуска игры
+        function startGame() {
+            playerName = document.getElementById('name-input').value;
+            if (!playerName) {
+                return;
+            }
+            gameRunning = true;
+            menu.style.display = 'none';
+            generateApple();
+            startGameSound.play(); // Воспроизведение звукового эффекта при старте игры
+            // Здесь вы можете продолжить разработку игры и добавить логику для змейки
+        }
+
+        // Функция для обработки нажатия клавиш
+        function handleKeyPress(event) {
+            // Обрабатываем только нажатия клавиш со стрелками
+            if (!gameRunning) {
+                return;
+            }
+
+            if (event.key === 'ArrowUp' && snakeDirection !== 'down') {
+                snakeDirection = 'up';
+            } else if (event.key === 'ArrowDown' && snakeDirection !== 'up') {
+                snakeDirection = 'down';
+            } else if (event.key === 'ArrowLeft' && snakeDirection !== 'right') {
+                snakeDirection = 'left';
+            } else if (event.key === 'ArrowRight' && snakeDirection !== 'left') {
+                snakeDirection = 'right';
+            }
+        }
+
+        // Привязываем обработчик события нажатия клавиш
+        document.addEventListener('keydown', handleKeyPress);
+
+    </script>
 </body>
 </html>
