@@ -20,43 +20,39 @@
       height: 100vh;
       overflow: hidden;
       box-sizing: border-box;
-      overflow: auto; /* Добавлено */
+      overflow: auto;
     }
     
     #game-board {
       position: relative;
       background-color: #fff;
       border: 1px solid #ccc;
-      width: 80vw;
-      max-width: 400px;
-      height: 80vw;
-      max-height: 400px;
       margin: 20px 0;
     }
     
     .button-container {
       display: flex;
       justify-content: center;
-      margin-top: 10px; /* Изменено */
-      margin-bottom: 10px; /* Изменено */
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
     
     .button {
-      width: 40px; /* Изменено */
-      height: 40px; /* Изменено */
+      width: 40px;
+      height: 40px;
       background-color: #4CAF50;
       color: #fff;
-      font-size: 12px; /* Изменено */
+      font-size: 12px;
       border-radius: 50%;
-      line-height: 40px; /* Изменено */
+      line-height: 40px;
       text-align: center;
       cursor: pointer;
       margin: 0 10px;
-      outline: none; /* Добавлено */
+      outline: none;
     }
     
     #score {
-      font-size: 16px; /* Изменено */
+      font-size: 16px;
       margin-top: 10px;
     }
     
@@ -86,9 +82,14 @@
     #restart-button {
       background-color: #4CAF50;
       color: #fff;
-      padding: 8px 16px; /* Изменено */
+      padding: 8px 16px;
       border-radius: 5px;
       cursor: pointer;
+    }
+    
+    #timer {
+      font-size: 24px;
+      margin-top: 10px;
     }
     
     /* Адаптивность интерфейса для телефона */
@@ -101,14 +102,14 @@
       }
       
       .button {
-        width: 30px; /* Изменено */
-        height: 30px; /* Изменено */
-        font-size: 10px; /* Изменено */
-        line-height: 30px; /* Изменено */
+        width: 30px;
+        height: 30px;
+        font-size: 10px;
+        line-height: 30px;
       }
       
       #score {
-        font-size: 14px; /* Изменено */
+        font-size: 14px;
       }
       
       #game-over-menu {
@@ -116,7 +117,11 @@
       }
       
       #restart-button {
-        padding: 6px 12px; /* Изменено */
+        padding: 6px 12px;
+      }
+      
+      #timer {
+        font-size: 20px;
       }
     }
   </style>
@@ -128,6 +133,8 @@
     <div id="game-board"></div>
     
     <div id="score">Очки: 0</div>
+    
+    <div id="timer">Время: 0 сек</div> <!-- Добавлено -->
     
     <div class="button-container">
       <div class="button" id="up-button">↑</div>
@@ -157,6 +164,7 @@
       const gameOverMenu = document.getElementById('game-over-menu');
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
+      const timerElement = document.getElementById('timer');
       
       const cellSize = 15;
       const totalCells = 20;
@@ -166,6 +174,7 @@
       let food = { x: 0, y: 0 };
       let score = 0;
       let gameInterval;
+      let seconds = 0; // Добавлено
       
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
@@ -285,6 +294,8 @@
         score = 0;
         placeFood();
         updateScore();
+        seconds = 0; // Добавлено
+        timerElement.textContent = 'Время: 0 сек'; // Добавлено
         drawSnake();
         hideGameOverMenu();
         startGame();
@@ -298,10 +309,16 @@
         }
         drawSnake();
         drawFood();
+        updateTimer(); // Добавлено
       }
       
       function startGame() {
         gameInterval = setInterval(gameLoop, 200);
+      }
+      
+      function updateTimer() {
+        seconds++;
+        timerElement.textContent = 'Время: ' + seconds + ' сек';
       }
       
       function handleOrientationChange() {
