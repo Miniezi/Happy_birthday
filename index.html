@@ -11,30 +11,16 @@
       text-align: center;
     }
     
-    #game-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
-    
     #game-board {
       position: relative;
       background-color: #fff;
       border: 1px solid #ccc;
-      width: 90vw;
-      max-width: 450px;
-      height: 90vw;
-      max-height: 450px;
-      margin: 20px 0;
+      width: 400px;
+      height: 400px;
+      margin: 0 auto;
     }
     
     .button-container {
-      display: flex;
-      justify-content: center;
       margin-top: 20px;
     }
     
@@ -55,36 +41,38 @@
 <body>
   <h1>Змейка</h1>
   
-  <div id="game-container">
-    <div id="game-board"></div>
-    
-    <div class="button-container">
-      <div class="button" id="up-button">↑</div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="left-button">←</div>
-      <div class="button" id="right-button">→</div>
-    </div>
-    
-    <div class="button-container">
-      <div class="button" id="down-button">↓</div>
-    </div>
-  </div>
+  <div id="game-board"></div>
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gameBoard = document.getElementById('game-board');
-      const upButton = document.getElementById('up-button');
-      const downButton = document.getElementById('down-button');
-      const leftButton = document.getElementById('left-button');
-      const rightButton = document.getElementById('right-button');
       
       const cellSize = 20;
       const totalCells = 20;
       
       let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
       let direction = { x: 0, y: 0 };
+      let food = { x: 0, y: 0 };
+      let score = 0;
+      
+      function getRandomPosition() {
+        return Math.floor(Math.random() * totalCells);
+      }
+      
+      function placeFood() {
+        let foodX;
+        let foodY;
+        do {
+          foodX = getRandomPosition();
+          foodY = getRandomPosition();
+        } while (isSnakeCollision(foodX, foodY));
+        
+        food = { x: foodX, y: foodY };
+      }
+      
+      function isSnakeCollision(x, y) {
+        return snake.some(segment => segment.x === x && segment.y === y);
+      }
       
       function drawSnake() {
         gameBoard.innerHTML = '';
@@ -100,10 +88,41 @@
         });
       }
       
+      function drawFood() {
+        const foodElement = document.createElement('div');
+        foodElement.style.width = cellSize + 'px';
+        foodElement.style.height = cellSize + 'px';
+        foodElement.style.backgroundColor = '#f00';
+        foodElement.style.position = 'absolute';
+        foodElement.style.left = food.x * cellSize + 'px';
+        foodElement.style.top = food.y * cellSize + 'px';
+        gameBoard.appendChild(foodElement);
+      }
+      
       function updateSnake() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
         snake.unshift(newHead);
-        snake.pop();
+        if (checkFoodCollision()) {
+          handleFoodCollision();
+        } else {
+          snake.pop();
+        }
+      }
+      
+      function handleFoodCollision() {
+        score++;
+        placeFood();
+        updateScore();
+      }
+      
+      function checkFoodCollision() {
+        const head = snake[0];
+        return head.x === food.x && head.y === food.y;
+      }
+      
+      function updateScore() {
+        const scoreElement = document.getElementById('score');
+        scoreElement.textContent = 'Очки: ' + score;
       }
       
       function handleButtonClick(event) {
@@ -144,6 +163,9 @@
       function resetGame() {
         snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
         direction = { x: 0, y: 0 };
+        score = 0;
+        placeFood();
+        updateScore();
         drawSnake();
       }
       
@@ -154,18 +176,46 @@
           return;
         }
         drawSnake();
+        drawFood();
       }
       
       function startGame() {
+        placeFood();
+        updateScore();
         gameInterval = setInterval(gameLoop, 200);
       }
+      
+      startGame();
+      
+      // Button event listeners
+      const upButton = document.createElement('div');
+      upButton.className = 'button';
+      upButton.id = 'up-button';
+      upButton.textContent = '↑';
+      document.body.appendChild(upButton);
+      
+      const downButton = document.createElement('div');
+      downButton.className = 'button';
+      downButton.id = 'down-button';
+      downButton.textContent = '↓';
+      document.body.appendChild(downButton);
+      
+      const leftButton = document.createElement('div');
+      leftButton.className = 'button';
+      leftButton.id = 'left-button';
+      leftButton.textContent = '←';
+      document.body.appendChild(leftButton);
+      
+      const rightButton = document.createElement('div');
+      rightButton.className = 'button';
+      rightButton.id = 'right-button';
+      rightButton.textContent = '→';
+      document.body.appendChild(rightButton);
       
       upButton.addEventListener('click', handleButtonClick);
       downButton.addEventListener('click', handleButtonClick);
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
-      
-      startGame();
     });
   </script>
 </body>
