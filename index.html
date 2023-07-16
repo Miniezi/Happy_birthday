@@ -25,10 +25,8 @@
       position: relative;
       background-color: #fff;
       border: 1px solid #ccc;
-      width: 90vw;
-      max-width: 450px;
-      height: 90vw;
-      max-height: 450px;
+      width: 300px;
+      height: 300px;
       margin: 20px 0;
     }
     
@@ -125,7 +123,7 @@
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
       
-      const cellSize = 20;
+      const cellSize = 15;
       const totalCells = 20;
       
       let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
