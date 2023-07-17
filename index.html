@@ -36,10 +36,6 @@
     <button id="start-button">Старт</button>
   </div>
 
-  <div id="settings-button-container">
-    <button id="settings-button">⚙️ Настройки</button>
-  </div>
-
   <div id="settings-menu">
     <!-- Код меню настроек остается без изменений -->
   </div>
@@ -68,8 +64,6 @@
       const rightButton = document.getElementById('right-button');
       const startButtonContainer = document.getElementById('start-button-container');
       const startButton = document.getElementById('start-button');
-      const settingsButtonContainer = document.getElementById('settings-button-container');
-      const settingsButton = document.getElementById('settings-button');
       
       let cellSize = 15;
       let totalCells = 20;
@@ -247,7 +241,6 @@
       applySettingsButton.addEventListener('click', applySettings);
       closeSettingsButton.addEventListener('click', closeSettings);
       startButton.addEventListener('click', startNewGame);
-      settingsButton.addEventListener('click', showSettingsMenu);
 
       function gameLoop() {
         if (isMoving) {
