@@ -25,7 +25,7 @@
     
     #game-board {
       position: relative;
-      background-color: #fff;
+      background-color: #008000;
       border: 1px solid #000;
       margin: 20px 0;
     }
@@ -93,47 +93,6 @@
       margin-top: 10px;
     }
     
-    #game-over-menu {
-      display: none;
-      background-color: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 999;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    
-    #game-over-menu h2 {
-      margin: 0;
-      margin-bottom: 10px;
-    }
-    
-    #game-over-menu p {
-      margin: 0;
-      margin-bottom: 10px;
-    }
-    
-    #game-over-menu button {
-      background-color: #4CAF50;
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    
-    #start-button {
-      display: none;
-      background-color: #4CAF50;
-      color: #fff;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    
     /* Адаптивность интерфейса для телефона */
     @media only screen and (max-width: 600px) {
       #game-board {
@@ -178,16 +137,16 @@
     
     <div id="timer">Время: 0 сек</div>
     
-    <div class="button-container">
+    <div class="button-container" id="button-container-1">
       <div class="button" id="up-button">↑</div>
     </div>
     
-    <div class="button-container">
+    <div class="button-container" id="button-container-2">
       <div class="button" id="left-button">←</div>
       <div class="button" id="right-button">→</div>
     </div>
     
-    <div class="button-container">
+    <div class="button-container" id="button-container-3">
       <div class="button" id="down-button">↓</div>
     </div>
     
@@ -204,8 +163,8 @@
       <label>
         Скорость игры:
         <select id="game-speed">
-          <option value="300">Низкая</option>
-          <option value="200" selected>Средняя</option>
+          <option value="200">Низкая</option>
+          <option value="150" selected>Средняя</option>
           <option value="100">Высокая</option>
         </select>
       </label>
@@ -255,6 +214,7 @@
       let gameInterval;
       let seconds = 0;
       let isMoving = false;
+      let isGameActive = false;
       
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
@@ -358,8 +318,6 @@
       function showGameOverMenu() {
         gameOverScoreElement.textContent = score;
         gameOverMenu.style.display = 'block';
-        startButton.style.display = 'block';
-        startButton.disabled = false;
       }
       
       function hideGameOverMenu() {
@@ -368,7 +326,9 @@
       
       function gameOver() {
         clearInterval(gameInterval);
+        isGameActive = false;
         showGameOverMenu();
+        showStartButton();
       }
       
       function resetGame() {
@@ -382,7 +342,6 @@
         drawSnake();
         hideGameOverMenu();
         startButton.style.display = 'block';
-        startButton.disabled = false;
       }
       
       function applySettings() {
@@ -395,18 +354,20 @@
         gameBoard.style.height = (totalCells * cellSize) + 'px';
         
         clearInterval(gameInterval);
-        startButton.disabled = false;
+        startButton.style.display = 'block';
         
         if (selectedControlsLayout === 1) {
-          document.getElementById('button-container-1').style.display = 'block';
-          document.getElementById('button-container-2').style.display = 'none';
-        } else {
-          document.getElementById('button-container-1').style.display = 'none';
-          document.getElementById('button-container-2').style.display = 'block';
+          buttonContainer1.style.display = 'flex';
+          buttonContainer2.style.display = 'none';
+          buttonContainer3.style.display = 'none';
+        } else if (selectedControlsLayout === 2) {
+          buttonContainer1.style.display = 'none';
+          buttonContainer2.style.display = 'flex';
+          buttonContainer3.style.display = 'flex';
         }
         
-        startButton.style.display = 'block';
-        startButton.style.marginTop = '10px';
+        startButton.style.marginTop = '0';
+        isGameActive = false;
       }
       
       function gameLoop() {
@@ -423,15 +384,19 @@
       }
       
       function startGame() {
-        gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
+        if (isGameActive) return;
+        
+        isGameActive = true;
         startButton.style.display = 'none';
-        startButton.disabled = true;
-        isMoving = true;
+        resetGame();
+        gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
       }
       
       function updateTimer() {
-        seconds++;
-        timerElement.textContent = 'Время: ' + seconds + ' сек';
+        if (isGameActive) {
+          seconds++;
+          timerElement.textContent = 'Время: ' + seconds + ' сек';
+        }
       }
       
       function showSettingsMenu() {
@@ -444,7 +409,7 @@
       
       function showStartButton() {
         startButton.style.display = 'block';
-        startButton.style.marginTop = '0';
+        startButton.style.marginTop = '20px';
       }
       
       function hideStartButton() {
