@@ -182,6 +182,8 @@
     <div class="button-container">
       <div class="button" id="down-button">↓</div>
     </div>
+    
+    <div id="start-button-container"></div>
   </div>
 
   <div id="settings-menu">
@@ -401,6 +403,23 @@
 
       settingsButton.addEventListener('click', showSettingsMenu);
       gameContainer.appendChild(settingsButton);
+
+      // Создаем кнопку "Старт"
+      const startButton = document.createElement('div');
+      startButton.textContent = 'Старт';
+      startButton.classList.add('button');
+      startButton.style.position = 'absolute';
+      startButton.style.bottom = '10px';
+      startButton.style.left = '50%';
+      startButton.style.transform = 'translateX(-50%)';
+      startButton.style.cursor = 'pointer';
+
+      // Добавляем обработчик события для кнопки "Старт"
+      startButton.addEventListener('click', startNewGame);
+
+      // Добавляем кнопку "Старт" в контейнер игры
+      const startButtonContainer = document.getElementById('start-button-container');
+      startButtonContainer.appendChild(startButton);
 
       function gameLoop() {
         if (isMoving) {
