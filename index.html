@@ -21,12 +21,13 @@
       overflow: hidden;
       box-sizing: border-box;
       overflow: auto;
+      position: relative;
     }
     
     #game-board {
       position: relative;
-      background-color: #008000;
-      border: 1px solid #000;
+      background-color: #fff;
+      border: 1px solid #ccc;
       margin: 20px 0;
     }
     
@@ -93,6 +94,38 @@
       margin-top: 10px;
     }
     
+    #game-over-menu {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 999;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    #game-over-menu h2 {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    
+    #game-over-menu p {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    
+    #game-over-menu button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
     /* Адаптивность интерфейса для телефона */
     @media only screen and (max-width: 600px) {
       #game-board {
@@ -137,16 +170,16 @@
     
     <div id="timer">Время: 0 сек</div>
     
-    <div class="button-container" id="button-container-1">
+    <div class="button-container">
       <div class="button" id="up-button">↑</div>
     </div>
     
-    <div class="button-container" id="button-container-2">
+    <div class="button-container">
       <div class="button" id="left-button">←</div>
       <div class="button" id="right-button">→</div>
     </div>
     
-    <div class="button-container" id="button-container-3">
+    <div class="button-container">
       <div class="button" id="down-button">↓</div>
     </div>
     
@@ -169,14 +202,13 @@
         </select>
       </label>
       <label>
-        Расположение кнопок:
+        Расположение стрелок:
         <select id="controls-layout">
           <option value="1">Одна рука</option>
           <option value="2">Две руки</option>
         </select>
       </label>
       <button id="apply-settings">Применить</button>
-      <button id="close-settings">Закрыть</button>
     </div>
     
     <div id="game-over-menu">
@@ -184,8 +216,6 @@
       <p>Набранные очки: <span id="game-over-score">0</span></p>
       <button id="restart-button">Начать заново</button>
     </div>
-    
-    <button id="start-button">Старт</button>
   </div>
   
   <script>
@@ -198,12 +228,14 @@
       const fieldSizeSelect = document.getElementById('field-size');
       const gameSpeedSelect = document.getElementById('game-speed');
       const controlsLayoutSelect = document.getElementById('controls-layout');
-      const applySettingsButton = document.getElementById('apply-settings');
-      const closeSettingsButton = document.getElementById('close-settings');
       const gameOverMenu = document.getElementById('game-over-menu');
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
-      const startButton = document.getElementById('start-button');
+      const applySettingsButton = document.getElementById('apply-settings');
+      const upButton = document.getElementById('up-button');
+      const downButton = document.getElementById('down-button');
+      const leftButton = document.getElementById('left-button');
+      const rightButton = document.getElementById('right-button');
       
       let cellSize = 15;
       let totalCells = 20;
@@ -214,7 +246,6 @@
       let gameInterval;
       let seconds = 0;
       let isMoving = false;
-      let isGameActive = false;
       
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
@@ -326,9 +357,7 @@
       
       function gameOver() {
         clearInterval(gameInterval);
-        isGameActive = false;
         showGameOverMenu();
-        showStartButton();
       }
       
       function resetGame() {
@@ -341,33 +370,19 @@
         timerElement.textContent = 'Время: 0 сек';
         drawSnake();
         hideGameOverMenu();
-        startButton.style.display = 'block';
+        startGame();
       }
       
       function applySettings() {
         const selectedFieldSize = parseInt(fieldSizeSelect.value);
         const selectedGameSpeed = parseInt(gameSpeedSelect.value);
-        const selectedControlsLayout = parseInt(controlsLayoutSelect.value);
         
         cellSize = Math.floor(gameBoard.offsetWidth / selectedFieldSize);
         totalCells = Math.floor(gameBoard.offsetWidth / cellSize);
         gameBoard.style.height = (totalCells * cellSize) + 'px';
         
         clearInterval(gameInterval);
-        startButton.style.display = 'block';
-        
-        if (selectedControlsLayout === 1) {
-          buttonContainer1.style.display = 'flex';
-          buttonContainer2.style.display = 'none';
-          buttonContainer3.style.display = 'none';
-        } else if (selectedControlsLayout === 2) {
-          buttonContainer1.style.display = 'none';
-          buttonContainer2.style.display = 'flex';
-          buttonContainer3.style.display = 'flex';
-        }
-        
-        startButton.style.marginTop = '0';
-        isGameActive = false;
+        startGame();
       }
       
       function gameLoop() {
@@ -384,16 +399,11 @@
       }
       
       function startGame() {
-        if (isGameActive) return;
-        
-        isGameActive = true;
-        startButton.style.display = 'none';
-        resetGame();
         gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
       }
       
       function updateTimer() {
-        if (isGameActive) {
+        if (isMoving) {
           seconds++;
           timerElement.textContent = 'Время: ' + seconds + ' сек';
         }
@@ -407,39 +417,76 @@
         settingsMenu.style.display = 'none';
       }
       
-      function showStartButton() {
-        startButton.style.display = 'block';
-        startButton.style.marginTop = '20px';
+      function toggleControlsVisibility(isVisible) {
+        if (isVisible) {
+          upButton.style.visibility = 'visible';
+          downButton.style.visibility = 'visible';
+          leftButton.style.visibility = 'visible';
+          rightButton.style.visibility = 'visible';
+        } else {
+          upButton.style.visibility = 'hidden';
+          downButton.style.visibility = 'hidden';
+          leftButton.style.visibility = 'hidden';
+          rightButton.style.visibility = 'hidden';
+        }
       }
       
-      function hideStartButton() {
-        startButton.style.display = 'none';
-      }
-      
-      function closeSettingsMenu() {
-        hideSettingsMenu();
-        showStartButton();
-      }
-      
-      closeSettingsButton.addEventListener('click', closeSettingsMenu);
+      restartButton.addEventListener('click', resetGame);
       applySettingsButton.addEventListener('click', applySettings);
-      
-      const upButton = document.getElementById('up-button');
-      const downButton = document.getElementById('down-button');
-      const leftButton = document.getElementById('left-button');
-      const rightButton = document.getElementById('right-button');
-      
       upButton.addEventListener('click', handleButtonClick);
       downButton.addEventListener('click', handleButtonClick);
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
       
-      startButton.addEventListener('click', startGame);
+      const settingsButton = document.createElement('div');
+      settingsButton.textContent = '⚙️';
+      settingsButton.style.fontSize = '24px';
+      settingsButton.style.cursor = 'pointer';
+      settingsButton.style.position = 'absolute';
+      settingsButton.style.top = '10px';
+      settingsButton.style.right = '10px';
       
-      gameContainer.appendChild(startButton);
+      settingsButton.addEventListener('click', showSettingsMenu);
+      gameContainer.appendChild(settingsButton);
+      
+      function handleControlsLayoutChange() {
+        const selectedLayout = controlsLayoutSelect.value;
+        if (selectedLayout === '1') {
+          toggleControlsVisibility(false);
+          upButton.style.position = 'absolute';
+          upButton.style.top = 'calc(50% - 40px)';
+          upButton.style.left = 'calc(50% - 20px)';
+          downButton.style.position = 'absolute';
+          downButton.style.top = 'calc(50% + 20px)';
+          downButton.style.left = 'calc(50% - 20px)';
+          leftButton.style.display = 'none';
+          rightButton.style.display = 'none';
+        } else if (selectedLayout === '2') {
+          toggleControlsVisibility(true);
+          upButton.style.position = '';
+          upButton.style.top = '';
+          upButton.style.left = '';
+          downButton.style.position = '';
+          downButton.style.top = '';
+          downButton.style.left = '';
+          leftButton.style.display = '';
+          rightButton.style.display = '';
+        }
+      }
+      
+      controlsLayoutSelect.addEventListener('change', handleControlsLayoutChange);
+      
+      function startGame() {
+        gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
+        startButton.style.display = 'none';
+        isMoving = true;
+      }
+      
+      startButton.addEventListener('click', startGame);
       
       applySettings();
       hideSettingsMenu();
+      toggleControlsVisibility(false);
     });
   </script>
 </body>
