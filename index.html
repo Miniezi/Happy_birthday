@@ -4,7 +4,16 @@
   <title>Змейка</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Ваши CSS-стили */
+    /* CSS стили */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Остальные стили... */
   </style>
 </head>
 <body>
@@ -31,7 +40,31 @@
     </div>
     
     <div id="settings-menu">
-      <!-- Код всплывающего меню настроек -->
+      <h2>Настройки</h2>
+      <label>
+        Размер игрового поля:
+        <select id="field-size">
+          <option value="15">Маленький</option>
+          <option value="20" selected>Средний</option>
+          <option value="25">Большой</option>
+        </select>
+      </label>
+      <label>
+        Скорость игры:
+        <select id="game-speed">
+          <option value="200">Низкая</option>
+          <option value="150" selected>Средняя</option>
+          <option value="100">Высокая</option>
+        </select>
+      </label>
+      <label>
+        Расположение стрелок:
+        <select id="controls-layout">
+          <option value="1">Одна рука</option>
+          <option value="2">Две руки</option>
+        </select>
+      </label>
+      <button id="apply-settings">Применить</button>
     </div>
     
     <div id="game-over-menu">
@@ -253,8 +286,14 @@
           rightButton.style.visibility = 'hidden';
         }
       }
+
+      function startNewGame() {
+        resetGame();
+        hideGameOverMenu();
+        startGame();
+      }
       
-      restartButton.addEventListener('click', resetGame);
+      restartButton.addEventListener('click', startNewGame);
       applySettingsButton.addEventListener('click', applySettings);
       upButton.addEventListener('click', handleButtonClick);
       downButton.addEventListener('click', handleButtonClick);
@@ -299,7 +338,9 @@
       
       controlsLayoutSelect.addEventListener('change', handleControlsLayoutChange);
       
-      startGame();
+      applySettings();
+      hideSettingsMenu();
+      toggleControlsVisibility(false);
     });
   </script>
 </body>
