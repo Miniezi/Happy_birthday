@@ -4,7 +4,9 @@
   <title>Змейка</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* CSS стили */
+    /* Стили игры */
+
+    /* Общие стили */
     body {
       font-family: Arial, sans-serif;
       background-color: #f2f2f2;
@@ -13,6 +15,7 @@
       text-align: center;
     }
 
+    /* Стили игрового контейнера */
     #game-container {
       display: flex;
       flex-direction: column;
@@ -25,6 +28,7 @@
       position: relative;
     }
 
+    /* Стили игрового поля */
     #game-board {
       position: relative;
       background-color: #fff;
@@ -32,6 +36,7 @@
       margin: 20px 0;
     }
 
+    /* Стили кнопок */
     .button-container {
       display: flex;
       justify-content: center;
@@ -53,16 +58,19 @@
       outline: none;
     }
 
+    /* Стили счета */
     #score {
       font-size: 16px;
       margin-top: 10px;
     }
 
+    /* Стили таймера */
     #timer {
       font-size: 24px;
       margin-top: 10px;
     }
 
+    /* Стили меню настроек */
     #settings-menu {
       display: none;
       background-color: rgba(0, 0, 0, 0.8);
@@ -95,6 +103,7 @@
       margin-top: 10px;
     }
 
+    /* Стили меню окончания игры */
     #game-over-menu {
       display: none;
       background-color: rgba(0, 0, 0, 0.8);
@@ -163,27 +172,29 @@
 </head>
 <body>
   <h1>Змейка</h1>
-  
+
+  <button id="close-settings">Закрыть</button>
+
   <div id="game-container">
     <div id="game-board"></div>
-    
+
     <div id="score">Очки: 0</div>
-    
+
     <div id="timer">Время: 0 сек</div>
-    
+
     <div class="button-container">
       <div class="button" id="up-button">↑</div>
     </div>
-    
+
     <div class="button-container">
       <div class="button" id="left-button">←</div>
       <div class="button" id="right-button">→</div>
     </div>
-    
+
     <div class="button-container">
       <div class="button" id="down-button">↓</div>
     </div>
-    
+
     <div id="settings-menu">
       <h2>Настройки</h2>
       <label>
@@ -202,23 +213,16 @@
           <option value="100">Высокая</option>
         </select>
       </label>
-      <label>
-        Расположение стрелок:
-        <select id="controls-layout">
-          <option value="1">Одна рука</option>
-          <option value="2">Две руки</option>
-        </select>
-      </label>
       <button id="apply-settings">Применить</button>
     </div>
-    
+
     <div id="game-over-menu">
       <h2>Игра окончена!</h2>
       <p>Набранные очки: <span id="game-over-score">0</span></p>
       <button id="restart-button">Начать заново</button>
     </div>
   </div>
-  
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const gameContainer = document.getElementById('game-container');
@@ -228,7 +232,6 @@
       const settingsMenu = document.getElementById('settings-menu');
       const fieldSizeSelect = document.getElementById('field-size');
       const gameSpeedSelect = document.getElementById('game-speed');
-      const controlsLayoutSelect = document.getElementById('controls-layout');
       const gameOverMenu = document.getElementById('game-over-menu');
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
@@ -237,7 +240,8 @@
       const downButton = document.getElementById('down-button');
       const leftButton = document.getElementById('left-button');
       const rightButton = document.getElementById('right-button');
-      
+      const closeSettingsButton = document.getElementById('close-settings');
+
       let cellSize = 15;
       let totalCells = 20;
       let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
@@ -247,11 +251,11 @@
       let gameInterval;
       let seconds = 0;
       let isMoving = false;
-      
+
       function getRandomPosition() {
         return Math.floor(Math.random() * totalCells);
       }
-      
+
       function placeFood() {
         let foodX;
         let foodY;
@@ -259,14 +263,14 @@
           foodX = getRandomPosition();
           foodY = getRandomPosition();
         } while (isSnakeCollision(foodX, foodY));
-        
+
         food = { x: foodX, y: foodY };
       }
-      
+
       function isSnakeCollision(x, y) {
         return snake.some(segment => segment.x === x && segment.y === y);
       }
-      
+
       function drawSnake() {
         gameBoard.innerHTML = '';
         snake.forEach(segment => {
@@ -280,7 +284,7 @@
           gameBoard.appendChild(segmentElement);
         });
       }
-      
+
       function drawFood() {
         const foodElement = document.createElement('div');
         foodElement.style.width = cellSize + 'px';
@@ -291,7 +295,7 @@
         foodElement.style.top = food.y * cellSize + 'px';
         gameBoard.appendChild(foodElement);
       }
-      
+
       function updateSnake() {
         const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
         snake.unshift(newHead);
@@ -301,22 +305,22 @@
           snake.pop();
         }
       }
-      
+
       function handleFoodCollision() {
         score++;
         placeFood();
         updateScore();
       }
-      
+
       function checkFoodCollision() {
         const head = snake[0];
         return head.x === food.x && head.y === food.y;
       }
-      
+
       function updateScore() {
         scoreElement.textContent = 'Очки: ' + score;
       }
-      
+
       function handleButtonClick(event) {
         const buttonId = event.target.id;
         switch (buttonId) {
@@ -335,7 +339,7 @@
         }
         isMoving = true;
       }
-      
+
       function checkCollision() {
         const head = snake[0];
         return (
@@ -346,21 +350,21 @@
           snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)
         );
       }
-      
+
       function showGameOverMenu() {
         gameOverScoreElement.textContent = score;
         gameOverMenu.style.display = 'block';
       }
-      
+
       function hideGameOverMenu() {
         gameOverMenu.style.display = 'none';
       }
-      
+
       function gameOver() {
         clearInterval(gameInterval);
         showGameOverMenu();
       }
-      
+
       function resetGame() {
         snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
         direction = { x: 0, y: 0 };
@@ -379,19 +383,19 @@
         resetGame();
         startGame();
       }
-      
+
       function applySettings() {
         const selectedFieldSize = parseInt(fieldSizeSelect.value);
         const selectedGameSpeed = parseInt(gameSpeedSelect.value);
-        
+
         cellSize = Math.floor(gameBoard.offsetWidth / selectedFieldSize);
         totalCells = Math.floor(gameBoard.offsetWidth / cellSize);
         gameBoard.style.height = (totalCells * cellSize) + 'px';
-        
+
         clearInterval(gameInterval);
         startGame();
       }
-      
+
       function gameLoop() {
         if (isMoving) {
           updateSnake();
@@ -404,26 +408,74 @@
           updateTimer();
         }
       }
-      
+
       function startGame() {
         gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
       }
-      
+
       function updateTimer() {
         if (isMoving) {
           seconds++;
           timerElement.textContent = 'Время: ' + seconds + ' сек';
         }
       }
-      
+
       function showSettingsMenu() {
         settingsMenu.style.display = 'block';
       }
-      
+
       function hideSettingsMenu() {
         settingsMenu.style.display = 'none';
       }
-      
+
+      function closeSettings() {
+        hideSettingsMenu();
+      }
+
+      upButton.addEventListener('click', handleButtonClick);
+      downButton.addEventListener('click', handleButtonClick);
+      leftButton.addEventListener('click', handleButtonClick);
+      rightButton.addEventListener('click', handleButtonClick);
+      restartButton.addEventListener('click', startNewGame);
+      applySettingsButton.addEventListener('click', applySettings);
+      closeSettingsButton.addEventListener('click', closeSettings);
+
+      const settingsButton = document.createElement('div');
+      settingsButton.textContent = '⚙️';
+      settingsButton.style.fontSize = '24px';
+      settingsButton.style.cursor = 'pointer';
+      settingsButton.style.position = 'absolute';
+      settingsButton.style.top = '10px';
+      settingsButton.style.right = '10px';
+
+      settingsButton.addEventListener('click', showSettingsMenu);
+      gameContainer.appendChild(settingsButton);
+
+      function handleControlsLayoutChange() {
+        const selectedLayout = controlsLayoutSelect.value;
+        if (selectedLayout === '1') {
+          toggleControlsVisibility(false);
+          upButton.style.position = 'absolute';
+          upButton.style.top = 'calc(50% - 40px)';
+          upButton.style.left = 'calc(50% - 20px)';
+          downButton.style.position = 'absolute';
+          downButton.style.top = 'calc(50% + 20px)';
+          downButton.style.left = 'calc(50% - 20px)';
+          leftButton.style.display = 'none';
+          rightButton.style.display = 'none';
+        } else if (selectedLayout === '2') {
+          toggleControlsVisibility(true);
+          upButton.style.position = '';
+          upButton.style.top = '';
+          upButton.style.left = '';
+          downButton.style.position = '';
+          downButton.style.top = '';
+          downButton.style.left = '';
+          leftButton.style.display = '';
+          rightButton.style.display = '';
+        }
+      }
+
       function toggleControlsVisibility(isVisible) {
         if (isVisible) {
           upButton.style.visibility = 'visible';
@@ -437,25 +489,7 @@
           rightButton.style.visibility = 'hidden';
         }
       }
-      
-      restartButton.addEventListener('click', startNewGame);
-      applySettingsButton.addEventListener('click', applySettings);
-      upButton.addEventListener('click', handleButtonClick);
-      downButton.addEventListener('click', handleButtonClick);
-      leftButton.addEventListener('click', handleButtonClick);
-      rightButton.addEventListener('click', handleButtonClick);
-      
-      const settingsButton = document.createElement('div');
-      settingsButton.textContent = '⚙️';
-      settingsButton.style.fontSize = '24px';
-      settingsButton.style.cursor = 'pointer';
-      settingsButton.style.position = 'absolute';
-      settingsButton.style.top = '10px';
-      settingsButton.style.right = '10px';
-      
-      settingsButton.addEventListener('click', showSettingsMenu);
-      gameContainer.appendChild(settingsButton);
-      
+
       function handleControlsLayoutChange() {
         const selectedLayout = controlsLayoutSelect.value;
         if (selectedLayout === '1') {
@@ -483,17 +517,9 @@
 
       controlsLayoutSelect.addEventListener('change', handleControlsLayoutChange);
 
-      function startGame() {
-        gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
-        startButton.style.display = 'none';
-        isMoving = true;
-      }
-
-      startButton.addEventListener('click', startGame);
-
       applySettings();
       hideSettingsMenu();
-      toggleControlsVisibility(true);
+      toggleControlsVisibility(false);
     });
   </script>
 </body>
