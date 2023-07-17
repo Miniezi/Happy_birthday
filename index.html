@@ -4,7 +4,8 @@
   <title>Змейка</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Ваши стили остаются без изменений */
+    /* Стили остаются без изменений */
+    /* ... */
   </style>
 </head>
 <body>
@@ -29,10 +30,14 @@
     <div class="button-container">
       <div class="button" id="down-button">↓</div>
     </div>
+  </div>
 
-    <div id="start-button-container">
-      <button id="start-button">Старт</button>
-    </div>
+  <div id="start-button-container">
+    <button id="start-button">Старт</button>
+  </div>
+
+  <div id="settings-button-container">
+    <button id="settings-button">⚙️ Настройки</button>
   </div>
 
   <div id="settings-menu">
@@ -63,6 +68,8 @@
       const rightButton = document.getElementById('right-button');
       const startButtonContainer = document.getElementById('start-button-container');
       const startButton = document.getElementById('start-button');
+      const settingsButtonContainer = document.getElementById('settings-button-container');
+      const settingsButton = document.getElementById('settings-button');
       
       let cellSize = 15;
       let totalCells = 20;
@@ -240,17 +247,7 @@
       applySettingsButton.addEventListener('click', applySettings);
       closeSettingsButton.addEventListener('click', closeSettings);
       startButton.addEventListener('click', startNewGame);
-
-      const settingsButton = document.createElement('div');
-      settingsButton.textContent = '⚙️';
-      settingsButton.style.fontSize = '24px';
-      settingsButton.style.cursor = 'pointer';
-      settingsButton.style.position = 'absolute';
-      settingsButton.style.top = '10px';
-      settingsButton.style.right = '10px';
-
       settingsButton.addEventListener('click', showSettingsMenu);
-      gameContainer.appendChild(settingsButton);
 
       function gameLoop() {
         if (isMoving) {
