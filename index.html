@@ -28,9 +28,14 @@
       width: 100%;
       height: 50px;
       background-color: lightgray;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
     }
 
     #settings {
@@ -46,6 +51,46 @@
       position: absolute;
       top: 120px;
       left: 10px;
+    }
+
+    #controls {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .control-button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      background-color: lightblue;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    @media only screen and (max-width: 480px) {
+      #game-board {
+        width: 100%;
+        height: auto;
+      }
+
+      .snake, .food {
+        width: 5px;
+        height: 5px;
+      }
+
+      #menu {
+        height: auto;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+      }
+
+      #game-log {
+        position: static;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -74,6 +119,13 @@
     <ul id="last-games"></ul>
   </div>
 
+  <div id="controls">
+    <button class="control-button" onclick="changeDirection('left')">Влево</button>
+    <button class="control-button" onclick="changeDirection('up')">Вверх</button>
+    <button class="control-button" onclick="changeDirection('right')">Вправо</button>
+    <button class="control-button" onclick="changeDirection('down')">Вниз</button>
+  </div>
+
   <script>
     var snakeGame = {
       fieldSize: 300,
@@ -84,16 +136,18 @@
       food: {},
       gameRunning: false,
       lastGames: [],
+      gameBoardElement: null,
+      lastGamesElement: null,
 
       init: function() {
-        var gameBoard = document.getElementById("game-board");
-        gameBoard.style.width = this.fieldSize + "px";
-        gameBoard.style.height = this.fieldSize + "px";
-
-        document.addEventListener("keydown", this.changeDirection);
+        this.gameBoardElement = document.getElementById("game-board");
+        this.lastGamesElement = document.getElementById("last-games");
+        this.gameBoardElement.style.width = this.fieldSize + "px";
+        this.gameBoardElement.style.height = this.fieldSize + "px";
 
         this.createSnake();
         this.createFood();
+        this.drawGameBoard();
         this.drawSnake();
         this.drawFood();
       },
@@ -107,22 +161,21 @@
         }
       },
 
+      drawElement: function(x, y, className) {
+        var element = document.createElement("div");
+        element.className = className;
+        element.style.left = x + "px";
+        element.style.top = y + "px";
+        this.gameBoardElement.appendChild(element);
+      },
+
+      drawGameBoard: function() {
+        this.gameBoardElement.innerHTML = '';
+      },
+
       drawSnake: function() {
-        var gameBoard = document.getElementById("game-board");
-
-        while (gameBoard.firstChild) {
-          gameBoard.removeChild(gameBoard.firstChild);
-        }
-
         for (var i = 0; i < this.snake.length; i++) {
-          var snakeElement = document.createElement("div");
-          snakeElement.style.width = this.snakeSize + "px";
-          snakeElement.style.height = this.snakeSize + "px";
-          snakeElement.style.backgroundColor = "green";
-          snakeElement.style.position = "absolute";
-          snakeElement.style.left = this.snake[i].x + "px";
-          snakeElement.style.top = this.snake[i].y + "px";
-          gameBoard.appendChild(snakeElement);
+          this.drawElement(this.snake[i].x, this.snake[i].y, "snake");
         }
       },
 
@@ -135,37 +188,29 @@
       },
 
       drawFood: function() {
-        var gameBoard = document.getElementById("game-board");
-        var foodElement = document.createElement("div");
-        foodElement.style.width = this.snakeSize + "px";
-        foodElement.style.height = this.snakeSize + "px";
-        foodElement.style.backgroundColor = "red";
-        foodElement.style.position = "absolute";
-        foodElement.style.left = this.food.x + "px";
-        foodElement.style.top = this.food.y + "px";
-        gameBoard.appendChild(foodElement);
+        this.drawElement(this.food.x, this.food.y, "food");
       },
 
-      changeDirection: function(event) {
-        switch (event.keyCode) {
-          case 37:
-            if (snakeGame.direction !== "right") {
-              snakeGame.direction = "left";
+      changeDirection: function(newDirection) {
+        switch (newDirection) {
+          case "left":
+            if (this.direction !== "right") {
+              this.direction = "left";
             }
             break;
-          case 38:
-            if (snakeGame.direction !== "down") {
-              snakeGame.direction = "up";
+          case "up":
+            if (this.direction !== "down") {
+              this.direction = "up";
             }
             break;
-          case 39:
-            if (snakeGame.direction !== "left") {
-              snakeGame.direction = "right";
+          case "right":
+            if (this.direction !== "left") {
+              this.direction = "right";
             }
             break;
-          case 40:
-            if (snakeGame.direction !== "up") {
-              snakeGame.direction = "down";
+          case "down":
+            if (this.direction !== "up") {
+              this.direction = "down";
             }
             break;
         }
@@ -222,14 +267,13 @@
       },
 
       updateGameLog: function(result) {
-        var lastGamesElement = document.getElementById("last-games");
         var resultText = result ? "Поражение" : "Победа";
         var gameResult = document.createElement("li");
         gameResult.innerText = resultText;
-        lastGamesElement.insertBefore(gameResult, lastGamesElement.firstChild);
+        this.lastGamesElement.insertBefore(gameResult, this.lastGamesElement.firstChild);
 
-        if (lastGamesElement.childElementCount > 3) {
-          lastGamesElement.removeChild(lastGamesElement.lastChild);
+        if (this.lastGamesElement.childElementCount > 3) {
+          this.lastGamesElement.removeChild(this.lastGamesElement.lastChild);
         }
       },
 
@@ -249,16 +293,19 @@
         }
 
         this.gameRunning = true;
-        var self = this;
+        document.getElementById("menu").style.display = "none";
 
+        var self = this;
         var gameInterval = setInterval(function() {
           self.moveSnake();
+          self.drawGameBoard();
           self.drawSnake();
 
           if (self.checkCollision()) {
             clearInterval(gameInterval);
             self.updateGameLog(true);
             self.resetGame();
+            document.getElementById("menu").style.display = "flex";
           }
         }, this.snakeSpeed);
       },
@@ -270,6 +317,8 @@
       hideSettings: function() {
         var fieldSizeSelect = document.getElementById("field-size");
         this.fieldSize = parseInt(fieldSizeSelect.value);
+        this.gameBoardElement.style.width = this.fieldSize + "px";
+        this.gameBoardElement.style.height = this.fieldSize + "px";
         document.getElementById("settings").style.display = "none";
       }
     };
