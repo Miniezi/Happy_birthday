@@ -93,6 +93,37 @@
       margin-top: 10px;
     }
     
+    #game-over-menu {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 999;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    #game-over-menu h2 {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    
+    #game-over-menu p {
+      margin: 0;
+      margin-bottom: 10px;
+    }
+    
+    #game-over-menu button {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
     #start-button {
       display: none;
       background-color: #4CAF50;
@@ -311,7 +342,6 @@
             break;
         }
         isMoving = true;
-        startButton.disabled = true;
       }
       
       function checkCollision() {
@@ -328,6 +358,7 @@
       function showGameOverMenu() {
         gameOverScoreElement.textContent = score;
         gameOverMenu.style.display = 'block';
+        startButton.style.display = 'block';
         startButton.disabled = false;
       }
       
@@ -350,6 +381,8 @@
         timerElement.textContent = 'Время: 0 сек';
         drawSnake();
         hideGameOverMenu();
+        startButton.style.display = 'block';
+        startButton.disabled = false;
       }
       
       function applySettings() {
@@ -392,6 +425,7 @@
       function startGame() {
         gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
         startButton.style.display = 'none';
+        startButton.disabled = true;
         isMoving = true;
       }
       
@@ -408,9 +442,22 @@
         settingsMenu.style.display = 'none';
       }
       
-      restartButton.addEventListener('click', resetGame);
+      function showStartButton() {
+        startButton.style.display = 'block';
+        startButton.style.marginTop = '0';
+      }
+      
+      function hideStartButton() {
+        startButton.style.display = 'none';
+      }
+      
+      function closeSettingsMenu() {
+        hideSettingsMenu();
+        showStartButton();
+      }
+      
+      closeSettingsButton.addEventListener('click', closeSettingsMenu);
       applySettingsButton.addEventListener('click', applySettings);
-      closeSettingsButton.addEventListener('click', hideSettingsMenu);
       
       const upButton = document.getElementById('up-button');
       const downButton = document.getElementById('down-button');
@@ -422,9 +469,9 @@
       leftButton.addEventListener('click', handleButtonClick);
       rightButton.addEventListener('click', handleButtonClick);
       
-      gameContainer.appendChild(startButton);
-      
       startButton.addEventListener('click', startGame);
+      
+      gameContainer.appendChild(startButton);
       
       applySettings();
       hideSettingsMenu();
