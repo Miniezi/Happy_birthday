@@ -93,10 +93,6 @@
       margin-top: 10px;
     }
     
-    #game-over-menu {
-      display: none;
-    }
-    
     /* Адаптивность интерфейса для телефона */
     @media only screen and (max-width: 600px) {
       #game-board {
@@ -155,27 +151,31 @@
     </div>
     
     <div id="settings-menu">
-      <div id="settings-content">
-        <h2>Настройки</h2>
-        <label>
-          Размер игрового поля:
-          <select id="field-size">
-            <option value="15">Маленький</option>
-            <option value="20" selected>Средний</option>
-            <option value="25">Большой</option>
-          </select>
-        </label>
-        <label>
-          Скорость игры:
-          <select id="game-speed">
-            <option value="200">Низкая</option>
-            <option value="150" selected>Средняя</option>
-            <option value="100">Высокая</option>
-          </select>
-        </label>
-        <button id="apply-settings">Применить</button>
-        <button id="close-settings">Закрыть</button>
-      </div>
+      <h2>Настройки</h2>
+      <label>
+        Размер игрового поля:
+        <select id="field-size">
+          <option value="15">Маленький</option>
+          <option value="20" selected>Средний</option>
+          <option value="25">Большой</option>
+        </select>
+      </label>
+      <label>
+        Скорость игры:
+        <select id="game-speed">
+          <option value="200">Низкая</option>
+          <option value="150" selected>Средняя</option>
+          <option value="100">Высокая</option>
+        </select>
+      </label>
+      <label>
+        Расположение стрелок:
+        <select id="controls-layout">
+          <option value="1">Одна рука</option>
+          <option value="2">Две руки</option>
+        </select>
+      </label>
+      <button id="apply-settings">Применить</button>
     </div>
     
     <div id="game-over-menu">
@@ -184,7 +184,7 @@
       <button id="restart-button">Начать заново</button>
     </div>
     
-    <button id="start-button">Старт</button>
+    <button id="start-button" style="display: none;">Старт</button>
   </div>
   
   <script>
@@ -194,19 +194,18 @@
       const scoreElement = document.getElementById('score');
       const timerElement = document.getElementById('timer');
       const settingsMenu = document.getElementById('settings-menu');
-      const settingsContent = document.getElementById('settings-content');
       const fieldSizeSelect = document.getElementById('field-size');
       const gameSpeedSelect = document.getElementById('game-speed');
+      const controlsLayoutSelect = document.getElementById('controls-layout');
       const gameOverMenu = document.getElementById('game-over-menu');
       const gameOverScoreElement = document.getElementById('game-over-score');
       const restartButton = document.getElementById('restart-button');
       const applySettingsButton = document.getElementById('apply-settings');
-      const closeSettingsButton = document.getElementById('close-settings');
       const startButton = document.getElementById('start-button');
       
       let cellSize = 15;
       let totalCells = 20;
-      let snake = [];
+      let snake = [{ x: Math.floor(totalCells / 2), y: Math.floor(totalCells / 2) }];
       let direction = { x: 0, y: 0 };
       let food = { x: 0, y: 0 };
       let score = 0;
@@ -325,6 +324,7 @@
       function gameOver() {
         clearInterval(gameInterval);
         showGameOverMenu();
+        startButton.style.display = 'block';
       }
       
       function resetGame() {
@@ -337,15 +337,27 @@
         timerElement.textContent = 'Время: 0 сек';
         drawSnake();
         hideGameOverMenu();
+        startButton.style.display = 'none';
+        startGame();
       }
       
       function applySettings() {
         const selectedFieldSize = parseInt(fieldSizeSelect.value);
         const selectedGameSpeed = parseInt(gameSpeedSelect.value);
+        const selectedControlsLayout = parseInt(controlsLayoutSelect.value);
         
         cellSize = Math.floor(gameBoard.offsetWidth / selectedFieldSize);
         totalCells = Math.floor(gameBoard.offsetWidth / cellSize);
         gameBoard.style.height = (totalCells * cellSize) + 'px';
+        
+        switch (selectedControlsLayout) {
+          case 1:
+            gameContainer.style.flexDirection = 'column';
+            break;
+          case 2:
+            gameContainer.style.flexDirection = 'row';
+            break;
+        }
         
         clearInterval(gameInterval);
         startGame();
@@ -365,15 +377,14 @@
       }
       
       function startGame() {
-        resetGame();
-        isMoving = true;
-        startButton.disabled = true;
         gameInterval = setInterval(gameLoop, gameSpeedSelect.value);
       }
       
       function updateTimer() {
-        seconds++;
-        timerElement.textContent = 'Время: ' + seconds + ' сек';
+        if (isMoving) {
+          seconds++;
+          timerElement.textContent = 'Время: ' + seconds + ' сек';
+        }
       }
       
       function showSettingsMenu() {
@@ -384,10 +395,8 @@
         settingsMenu.style.display = 'none';
       }
       
-      startButton.addEventListener('click', startGame);
       restartButton.addEventListener('click', resetGame);
       applySettingsButton.addEventListener('click', applySettings);
-      closeSettingsButton.addEventListener('click', hideSettingsMenu);
       
       const upButton = document.getElementById('up-button');
       const downButton = document.getElementById('down-button');
@@ -410,6 +419,30 @@
       gameContainer.appendChild(settingsButton);
       applySettings();
       hideSettingsMenu();
+      
+      startButton.addEventListener('click', () => {
+        isMoving = true;
+        startButton.style.display = 'none';
+      });
+      
+      document.addEventListener('keydown', (event) => {
+        switch (event.key) {
+          case 'ArrowUp':
+            if (direction.y !== 1) direction = { x: 0, y: -1 };
+            break;
+          case 'ArrowDown':
+            if (direction.y !== -1) direction = { x: 0, y: 1 };
+            break;
+          case 'ArrowLeft':
+            if (direction.x !== 1) direction = { x: -1, y: 0 };
+            break;
+          case 'ArrowRight':
+            if (direction.x !== -1) direction = { x: 1, y: 0 };
+            break;
+        }
+        isMoving = true;
+        startButton.style.display = 'none';
+      });
     });
   </script>
 </body>
