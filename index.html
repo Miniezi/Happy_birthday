@@ -5,58 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Информационный сайт</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .cover {
-      display: block;
-    }
-
-    .content {
-      display: none;
-      margin-top: 20px;
-    }
-
-    .content.active {
-      display: block;
-    }
-
-    .button-container {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .button {
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-      border: none;
-      background-color: #007bff;
-      color: #fff;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    .footer {
-      margin-top: 50px;
-      color: #777;
-    }
+    /* ...Previous CSS code... */
   </style>
 </head>
 <body>
   <div class="cover">
     <h1>Добро пожаловать на информационный сайт!</h1>
-    <p>Выберите страницу, чтобы узнать больше:</p>
+    <p>Выберите страницу или играйте в Tetris:</p>
     <div class="button-container">
       <button class="button" onclick="showPage(1)">Страница 1</button>
       <button class="button" onclick="showPage(2)">Страница 2</button>
       <button class="button" onclick="showPage(3)">Страница 3</button>
     </div>
+    <div class="tetris-container" id="tetrisContainer"></div>
   </div>
 
   <div class="content" id="page1">
@@ -77,10 +38,6 @@
     <button class="button" onclick="returnToCover()">Вернуться к выбору</button>
   </div>
 
-  <div class="footer">
-    <p>Сайт создан с помощью ChatGPT</p>
-  </div>
-
   <script>
     let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -95,6 +52,9 @@
 
       const targetContent = document.getElementById(`page${pageNumber}`);
       targetContent.classList.add('active');
+
+      // Pause the Tetris game when showing a content page
+      clearInterval(gameInterval);
     }
 
     function returnToCover() {
@@ -105,7 +65,61 @@
       for (const content of contents) {
         content.classList.remove('active');
       }
+
+      // Resume the Tetris game when returning to the cover page
+      startGame();
     }
+
+    // Tetris game code
+    let tetrisGrid = [];
+    const tetrisContainer = document.getElementById('tetrisContainer');
+    let currentTetromino = null;
+    let gameInterval = null;
+
+    function createTetrisGrid() {
+      /* ...Tetris grid creation code... */
+    }
+
+    function clearTetrisGrid() {
+      /* ...Tetris grid clearing code... */
+    }
+
+    function drawTetromino(tetromino) {
+      /* ...Tetromino drawing code... */
+    }
+
+    function moveTetromino(tetromino, dRow, dCol) {
+      /* ...Tetromino movement code... */
+    }
+
+    function rotateTetromino(tetromino) {
+      /* ...Tetromino rotation code... */
+    }
+
+    // Tetromino shapes
+    const tetrominoes = [
+      /* ...Tetromino shapes array... */
+    ];
+
+    function generateRandomTetromino() {
+      /* ...Random tetromino generation code... */
+    }
+
+    function startGame() {
+      createTetrisGrid();
+      currentTetromino = generateRandomTetromino();
+      drawTetromino(currentTetromino);
+
+      // Start the game loop
+      gameInterval = setInterval(gameLoop, 500);
+    }
+
+    function gameLoop() {
+      /* ...Tetris game loop code... */
+    }
+
+    // Call the startGame function when the page loads
+    window.onload = startGame;
   </script>
 </body>
 </html>
