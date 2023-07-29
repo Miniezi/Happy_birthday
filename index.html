@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Информационный сайт</title>
   <style>
     body {
@@ -58,14 +59,16 @@
   </div>
 
   <script>
-    function showPage(pageNumber) {
-      const contents = document.querySelectorAll('.content');
+    let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-      for (const content of contents) {
+    function showPage(pageNumber) {
+      if (isMobile) {
+        const content = document.querySelector('.content.active');
         content.classList.remove('active');
       }
 
-      contents[pageNumber - 1].classList.add('active');
+      const targetContent = document.querySelector(`#page${pageNumber}`);
+      targetContent.classList.add('active');
     }
   </script>
 </body>
