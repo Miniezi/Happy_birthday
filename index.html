@@ -5,7 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Информационный сайт</title>
   <style>
-    /* ...Previous CSS code... */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Center the content vertically on the screen */
+    html, body {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .cover {
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .content {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .button-container {
+      margin-top: 20px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    /* Optimize image display */
+    img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -22,9 +70,7 @@
   <div class="content" id="page1">
     <h1>Страница 1</h1>
     <picture>
-      <!-- Small image for phones -->
       <source media="(max-width: 480px)" srcset="image/photo1-small.jpg">
-      <!-- Default image for other screen sizes -->
       <img src="image/photo1.jpg" alt="Фото 1">
     </picture>
     <p>Здесь информация о первом предмете.</p>
