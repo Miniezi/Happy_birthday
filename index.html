@@ -70,7 +70,11 @@
   <div class="content" id="page1">
     <h1>Страница 1</h1>
     <picture>
-      <source media="(max-width: 480px)" srcset="image/photo1-small.jpg">
+      <!-- WebP format for modern browsers that support it -->
+      <source srcset="image/photo1.webp" type="image/webp">
+      <!-- JPEG format for other browsers -->
+      <source srcset="image/photo1.jpg" type="image/jpeg">
+      <!-- Fallback for browsers that do not support the <picture> element -->
       <img src="image/photo1.jpg" alt="Фото 1">
     </picture>
     <p>Здесь информация о первом предмете.</p>
