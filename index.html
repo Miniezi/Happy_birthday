@@ -14,6 +14,7 @@
 
     .content {
       display: none;
+      margin-top: 20px;
     }
 
     .content.active {
@@ -22,6 +23,7 @@
 
     .button-container {
       text-align: center;
+      margin-top: 20px;
     }
 
     .button {
@@ -37,17 +39,17 @@
   </style>
 </head>
 <body>
-  <div class="content active">
+  <div class="content active" id="page1">
     <h1>Страница 1</h1>
     <p>Здесь информация о первом предмете.</p>
   </div>
 
-  <div class="content">
+  <div class="content" id="page2">
     <h1>Страница 2</h1>
     <p>Здесь информация о втором предмете.</p>
   </div>
 
-  <div class="content">
+  <div class="content" id="page3">
     <h1>Страница 3</h1>
     <p>Здесь информация о третьем предмете.</p>
   </div>
@@ -63,11 +65,11 @@
 
     function showPage(pageNumber) {
       if (isMobile) {
-        const content = document.querySelector('.content.active');
-        content.classList.remove('active');
+        const activeContent = document.querySelector('.content.active');
+        activeContent.classList.remove('active');
       }
 
-      const targetContent = document.querySelector(`#page${pageNumber}`);
+      const targetContent = document.getElementById(`page${pageNumber}`);
       targetContent.classList.add('active');
     }
   </script>
