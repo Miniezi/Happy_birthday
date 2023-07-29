@@ -7,22 +7,14 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Center the content vertically on the screen */
-    html, body {
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
     }
 
     .cover {
       display: block;
-      margin-bottom: 20px;
     }
 
     .content {
@@ -35,6 +27,7 @@
     }
 
     .button-container {
+      text-align: center;
       margin-top: 20px;
     }
 
@@ -49,8 +42,7 @@
       font-size: 16px;
     }
 
-    /* Optimize image display */
-    img {
+    .content img {
       max-width: 100%;
       height: auto;
     }
@@ -69,14 +61,7 @@
 
   <div class="content" id="page1">
     <h1>Страница 1</h1>
-    <picture>
-      <!-- WebP format for modern browsers that support it -->
-      <source srcset="image/photo1.webp" type="image/webp">
-      <!-- JPEG format for other browsers -->
-      <source srcset="image/photo1.jpg" type="image/jpeg">
-      <!-- Fallback for browsers that do not support the <picture> element -->
-      <img src="image/photo1.jpg" alt="Фото 1">
-    </picture>
+    <img src="image/photo1.jpg" alt="Фото 1">
     <p>Здесь информация о первом предмете.</p>
   </div>
 
