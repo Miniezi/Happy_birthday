@@ -1,95 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Информационный сайт</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .cover {
-      display: block;
-    }
-
-    .content {
-      display: none;
-      margin-top: 20px;
-    }
-
-    .content.active {
-      display: block;
-    }
-
-    .button-container {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .button {
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-      border: none;
-      background-color: #007bff;
-      color: #fff;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    .content img {
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заголовок вашего сайта</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <div class="cover">
-    <h1>Добро пожаловать на информационный сайт!</h1>
-    <p>Выберите страницу, чтобы узнать больше:</p>
-    <div class="button-container">
-      <button class="button" onclick="showPage(1)">Страница 1</button>
-      <button class="button" onclick="showPage(2)">Страница 2</button>
-      <button class="button" onclick="showPage(3)">Страница 3</button>
-    </div>
-  </div>
+    <header>
+        <div class="menu-btn">
+            <div class="menu-bar"></div>
+            <div class="menu-bar"></div>
+            <div class="menu-bar"></div>
+        </div>
+        <nav class="menu">
+            <ul>
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#about">О нас</a></li>
+                <li><a href="#services">Услуги</a></li>
+                <li><a href="#contact">Контакты</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <div class="content" id="page1">
-    <h1>Страница 1</h1>
-    <img src="image/photo1.jpg" alt="Фото 1">
-    <p>Здесь информация о первом предмете.</p>
-  </div>
+    <!-- Здесь разместите контент вашего сайта -->
 
-  <div class="content" id="page2">
-    <h1>Страница 2</h1>
-    <p>Здесь информация о втором предмете.</p>
-  </div>
-
-  <div class="content" id="page3">
-    <h1>Страница 3</h1>
-    <p>Здесь информация о третьем предмете.</p>
-  </div>
-
-  <script>
-    let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    function showPage(pageNumber) {
-      const cover = document.querySelector('.cover');
-      cover.style.display = 'none';
-
-      const contents = document.querySelectorAll('.content');
-      for (const content of contents) {
-        content.classList.remove('active');
-      }
-
-      const targetContent = document.getElementById(`page${pageNumber}`);
-      targetContent.classList.add('active');
-    }
-  </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
