@@ -41,6 +41,11 @@
       border-radius: 5px;
       font-size: 16px;
     }
+
+    .footer {
+      margin-top: 50px;
+      color: #777;
+    }
   </style>
 </head>
 <body>
@@ -54,34 +59,52 @@
     </div>
   </div>
 
-  <div class="content active" id="page1">
+  <div class="content" id="page1">
     <h1>Страница 1</h1>
     <p>Здесь информация о первом предмете.</p>
+    <button class="button" onclick="returnToCover()">Вернуться к выбору</button>
   </div>
 
   <div class="content" id="page2">
     <h1>Страница 2</h1>
     <p>Здесь информация о втором предмете.</p>
+    <button class="button" onclick="returnToCover()">Вернуться к выбору</button>
   </div>
 
   <div class="content" id="page3">
     <h1>Страница 3</h1>
     <p>Здесь информация о третьем предмете.</p>
+    <button class="button" onclick="returnToCover()">Вернуться к выбору</button>
+  </div>
+
+  <div class="footer">
+    <p>Сайт создан с помощью ChatGPT</p>
   </div>
 
   <script>
     let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     function showPage(pageNumber) {
-      if (isMobile) {
-        const cover = document.querySelector('.cover');
-        cover.style.display = 'none';
-        const activeContent = document.querySelector('.content.active');
-        activeContent.classList.remove('active');
+      const cover = document.querySelector('.cover');
+      cover.style.display = 'none';
+
+      const contents = document.querySelectorAll('.content');
+      for (const content of contents) {
+        content.classList.remove('active');
       }
 
       const targetContent = document.getElementById(`page${pageNumber}`);
       targetContent.classList.add('active');
+    }
+
+    function returnToCover() {
+      const cover = document.querySelector('.cover');
+      cover.style.display = 'block';
+
+      const contents = document.querySelectorAll('.content');
+      for (const content of contents) {
+        content.classList.remove('active');
+      }
     }
   </script>
 </body>
