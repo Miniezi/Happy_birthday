@@ -1,58 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Информационный сайт</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-    }
-
-    .content {
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
     }
 
-    .hidden {
+    .content {
       display: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .button-container {
+      text-align: center;
+    }
+
+    .button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
-  <div class="content">
-    <div id="page1">
-      <h1>Страница 1</h1>
-      <p>Здесь информация о первом предмете.</p>
-    </div>
-
-    <div id="page2" class="hidden">
-      <h1>Страница 2</h1>
-      <p>Здесь информация о втором предмете.</p>
-    </div>
-
-    <div id="page3" class="hidden">
-      <h1>Страница 3</h1>
-      <p>Здесь информация о третьем предмете.</p>
-    </div>
+  <div class="content active">
+    <h1>Страница 1</h1>
+    <p>Здесь информация о первом предмете.</p>
   </div>
 
   <div class="content">
-    <button onclick="showPage(1)">Страница 1</button>
-    <button onclick="showPage(2)">Страница 2</button>
-    <button onclick="showPage(3)">Страница 3</button>
+    <h1>Страница 2</h1>
+    <p>Здесь информация о втором предмете.</p>
+  </div>
+
+  <div class="content">
+    <h1>Страница 3</h1>
+    <p>Здесь информация о третьем предмете.</p>
+  </div>
+
+  <div class="button-container">
+    <button class="button" onclick="showPage(1)">Страница 1</button>
+    <button class="button" onclick="showPage(2)">Страница 2</button>
+    <button class="button" onclick="showPage(3)">Страница 3</button>
   </div>
 
   <script>
     function showPage(pageNumber) {
-      const pages = document.getElementsByClassName('content');
+      const contents = document.querySelectorAll('.content');
 
-      for (let i = 0; i < pages.length; i++) {
-        if (i === pageNumber - 1) {
-          pages[i].classList.remove('hidden');
-        } else {
-          pages[i].classList.add('hidden');
-        }
+      for (const content of contents) {
+        content.classList.remove('active');
       }
+
+      contents[pageNumber - 1].classList.add('active');
     }
   </script>
 </body>
