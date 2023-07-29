@@ -10,6 +10,11 @@
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
+      text-align: center;
+    }
+
+    .cover {
+      display: block;
     }
 
     .content {
@@ -39,6 +44,16 @@
   </style>
 </head>
 <body>
+  <div class="cover">
+    <h1>Добро пожаловать на информационный сайт!</h1>
+    <p>Выберите страницу, чтобы узнать больше:</p>
+    <div class="button-container">
+      <button class="button" onclick="showPage(1)">Страница 1</button>
+      <button class="button" onclick="showPage(2)">Страница 2</button>
+      <button class="button" onclick="showPage(3)">Страница 3</button>
+    </div>
+  </div>
+
   <div class="content active" id="page1">
     <h1>Страница 1</h1>
     <p>Здесь информация о первом предмете.</p>
@@ -54,17 +69,13 @@
     <p>Здесь информация о третьем предмете.</p>
   </div>
 
-  <div class="button-container">
-    <button class="button" onclick="showPage(1)">Страница 1</button>
-    <button class="button" onclick="showPage(2)">Страница 2</button>
-    <button class="button" onclick="showPage(3)">Страница 3</button>
-  </div>
-
   <script>
     let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     function showPage(pageNumber) {
       if (isMobile) {
+        const cover = document.querySelector('.cover');
+        cover.style.display = 'none';
         const activeContent = document.querySelector('.content.active');
         activeContent.classList.remove('active');
       }
