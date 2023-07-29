@@ -1,329 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Змейка</title>
+  <title>Информационный сайт</title>
   <style>
-    #game-board {
-      width: 300px;
-      height: 300px;
-      border: 1px solid black;
-      position: relative;
+    body {
+      font-family: Arial, sans-serif;
     }
 
-    .snake {
-      width: 10px;
-      height: 10px;
-      background-color: green;
-      position: absolute;
+    .content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    .food {
-      width: 10px;
-      height: 10px;
-      background-color: red;
-      position: absolute;
-    }
-
-    #menu {
-      width: 100%;
-      height: 50px;
-      background-color: lightgray;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 10px;
-    }
-
-    #settings {
+    .hidden {
       display: none;
-      position: absolute;
-      top: 60px;
-      left: 10px;
-      padding: 10px;
-      background-color: lightgray;
-    }
-
-    #game-log {
-      position: absolute;
-      top: 120px;
-      left: 10px;
-    }
-
-    #controls {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .control-button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      background-color: lightblue;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    @media only screen and (max-width: 480px) {
-      #game-board {
-        width: 100%;
-        height: auto;
-      }
-
-      .snake, .food {
-        width: 5px;
-        height: 5px;
-      }
-
-      #menu {
-        height: auto;
-        flex-direction: column;
-        align-items: center;
-        padding: 10px;
-      }
-
-      #game-log {
-        position: static;
-        margin-top: 10px;
-      }
     }
   </style>
 </head>
 <body>
-  <div id="menu">
-    <button onclick="startGame()">Старт</button>
-    <button onclick="showSettings()">Настройки</button>
+  <div class="content">
+    <div id="page1">
+      <h1>Страница 1</h1>
+      <p>Здесь информация о первом предмете.</p>
+    </div>
+
+    <div id="page2" class="hidden">
+      <h1>Страница 2</h1>
+      <p>Здесь информация о втором предмете.</p>
+    </div>
+
+    <div id="page3" class="hidden">
+      <h1>Страница 3</h1>
+      <p>Здесь информация о третьем предмете.</p>
+    </div>
   </div>
 
-  <div id="settings">
-    <h3>Настройки</h3>
-    <label for="field-size">Размер поля:</label>
-    <select id="field-size">
-      <option value="300">Маленький</option>
-      <option value="400">Средний</option>
-      <option value="500">Большой</option>
-    </select>
-    <br>
-    <button onclick="hideSettings()">Применить</button>
-  </div>
-
-  <div id="game-board"></div>
-
-  <div id="game-log">
-    <h3>Последние игры</h3>
-    <ul id="last-games"></ul>
-  </div>
-
-  <div id="controls">
-    <button class="control-button" onclick="changeDirection('left')">Влево</button>
-    <button class="control-button" onclick="changeDirection('up')">Вверх</button>
-    <button class="control-button" onclick="changeDirection('right')">Вправо</button>
-    <button class="control-button" onclick="changeDirection('down')">Вниз</button>
+  <div class="content">
+    <button onclick="showPage(1)">Страница 1</button>
+    <button onclick="showPage(2)">Страница 2</button>
+    <button onclick="showPage(3)">Страница 3</button>
   </div>
 
   <script>
-    var snakeGame = {
-      fieldSize: 300,
-      snakeSize: 10,
-      snakeSpeed: 150,
-      snake: [],
-      direction: "right",
-      food: {},
-      gameRunning: false,
-      lastGames: [],
-      gameBoardElement: null,
-      lastGamesElement: null,
+    function showPage(pageNumber) {
+      const pages = document.getElementsByClassName('content');
 
-      init: function() {
-        this.gameBoardElement = document.getElementById("game-board");
-        this.lastGamesElement = document.getElementById("last-games");
-        this.gameBoardElement.style.width = this.fieldSize + "px";
-        this.gameBoardElement.style.height = this.fieldSize + "px";
-
-        this.createSnake();
-        this.createFood();
-        this.drawGameBoard();
-        this.drawSnake();
-        this.drawFood();
-      },
-
-      createSnake: function() {
-        var initialSnakeSize = 5;
-        var initialSnakeX = Math.floor(this.fieldSize / 2 / this.snakeSize) * this.snakeSize;
-
-        for (var i = initialSnakeSize - 1; i >= 0; i--) {
-          this.snake.push({ x: initialSnakeX + i * this.snakeSize, y: 0 });
-        }
-      },
-
-      drawElement: function(x, y, className) {
-        var element = document.createElement("div");
-        element.className = className;
-        element.style.left = x + "px";
-        element.style.top = y + "px";
-        this.gameBoardElement.appendChild(element);
-      },
-
-      drawGameBoard: function() {
-        this.gameBoardElement.innerHTML = '';
-      },
-
-      drawSnake: function() {
-        for (var i = 0; i < this.snake.length; i++) {
-          this.drawElement(this.snake[i].x, this.snake[i].y, "snake");
-        }
-      },
-
-      createFood: function() {
-        var maxCells = Math.floor(this.fieldSize / this.snakeSize);
-        var randomX = Math.floor(Math.random() * maxCells) * this.snakeSize;
-        var randomY = Math.floor(Math.random() * maxCells) * this.snakeSize;
-
-        this.food = { x: randomX, y: randomY };
-      },
-
-      drawFood: function() {
-        this.drawElement(this.food.x, this.food.y, "food");
-      },
-
-      changeDirection: function(newDirection) {
-        switch (newDirection) {
-          case "left":
-            if (this.direction !== "right") {
-              this.direction = "left";
-            }
-            break;
-          case "up":
-            if (this.direction !== "down") {
-              this.direction = "up";
-            }
-            break;
-          case "right":
-            if (this.direction !== "left") {
-              this.direction = "right";
-            }
-            break;
-          case "down":
-            if (this.direction !== "up") {
-              this.direction = "down";
-            }
-            break;
-        }
-      },
-
-      moveSnake: function() {
-        var head = { x: this.snake[0].x, y: this.snake[0].y };
-
-        switch (this.direction) {
-          case "left":
-            head.x -= this.snakeSize;
-            break;
-          case "up":
-            head.y -= this.snakeSize;
-            break;
-          case "right":
-            head.x += this.snakeSize;
-            break;
-          case "down":
-            head.y += this.snakeSize;
-            break;
-        }
-
-        this.snake.unshift(head);
-
-        if (head.x === this.food.x && head.y === this.food.y) {
-          this.createFood();
+      for (let i = 0; i < pages.length; i++) {
+        if (i === pageNumber - 1) {
+          pages[i].classList.remove('hidden');
         } else {
-          this.snake.pop();
+          pages[i].classList.add('hidden');
         }
-      },
-
-      checkCollision: function() {
-        var head = this.snake[0];
-
-        // Check collision with walls
-        if (
-          head.x < 0 ||
-          head.x >= this.fieldSize ||
-          head.y < 0 ||
-          head.y >= this.fieldSize
-        ) {
-          return true;
-        }
-
-        // Check collision with self
-        for (var i = 1; i < this.snake.length; i++) {
-          if (head.x === this.snake[i].x && head.y === this.snake[i].y) {
-            return true;
-          }
-        }
-
-        return false;
-      },
-
-      updateGameLog: function(result) {
-        var resultText = result ? "Поражение" : "Победа";
-        var gameResult = document.createElement("li");
-        gameResult.innerText = resultText;
-        this.lastGamesElement.insertBefore(gameResult, this.lastGamesElement.firstChild);
-
-        if (this.lastGamesElement.childElementCount > 3) {
-          this.lastGamesElement.removeChild(this.lastGamesElement.lastChild);
-        }
-      },
-
-      resetGame: function() {
-        this.snake = [];
-        this.direction = "right";
-        this.createSnake();
-        this.createFood();
-        this.drawSnake();
-        this.drawFood();
-        this.gameRunning = false;
-      },
-
-      startGame: function() {
-        if (this.gameRunning) {
-          return;
-        }
-
-        this.gameRunning = true;
-        document.getElementById("menu").style.display = "none";
-
-        var self = this;
-        var gameInterval = setInterval(function() {
-          self.moveSnake();
-          self.drawGameBoard();
-          self.drawSnake();
-
-          if (self.checkCollision()) {
-            clearInterval(gameInterval);
-            self.updateGameLog(true);
-            self.resetGame();
-            document.getElementById("menu").style.display = "flex";
-          }
-        }, this.snakeSpeed);
-      },
-
-      showSettings: function() {
-        document.getElementById("settings").style.display = "block";
-      },
-
-      hideSettings: function() {
-        var fieldSizeSelect = document.getElementById("field-size");
-        this.fieldSize = parseInt(fieldSizeSelect.value);
-        this.gameBoardElement.style.width = this.fieldSize + "px";
-        this.gameBoardElement.style.height = this.fieldSize + "px";
-        document.getElementById("settings").style.display = "none";
       }
-    };
-
-    snakeGame.init();
+    }
   </script>
 </body>
 </html>
