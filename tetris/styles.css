@@ -1,18 +1,25 @@
+/* Style the game board container */
+#game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
 /* Style the game board */
 #game-board {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(20, 30px);
   grid-gap: 1px;
   background-color: #000;
-  margin: 10px;
 }
 
 /* Style the Tetris grid cells */
 .cell {
-  width: calc(10% - 2px);
-  height: 0;
-  padding-bottom: calc(10% - 2px);
-  border: 1px solid #333;
+  width: 100%;
+  height: 100%;
+  background-color: #333;
 }
 
 /* Style the controls */
