@@ -1,31 +1,35 @@
-/* Стили контейнера игрового поля */
-#game-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+// Глобальные переменные для управления игрой
+let gameBoard;
+let currentTetromino;
+let currentTetrominoShape;
+let currentTetrominoColor;
+let currentTetrominoX;
+let currentTetrominoY;
+let colors = {
+  cyan: "#00FFFF",
+  blue: "#0000FF",
+  orange: "#FFA500",
+  yellow: "#FFFF00",
+  green: "#00FF00",
+  purple: "#800080",
+  red: "#FF0000",
+};
+
+// Функция для отображения игрового поля тетриса
+function renderGrid() {
+  gameBoard = document.getElementById("game-board");
+
+  // Очищаем игровое поле перед отображением
+  gameBoard.innerHTML = "";
+
+  // Создаем сетку игрового поля
+  for (let i = 0; i < 20; i++) {
+    for (let j = 0; j < 10; j++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      gameBoard.appendChild(cell);
+    }
+  }
 }
 
-/* Стили игрового поля */
-#game-board {
-  display: grid;
-  grid-template-columns: repeat(10, 30px);
-  grid-template-rows: repeat(20, 30px);
-  grid-gap: 1px;
-  background-color: #000;
-}
-
-/* Стили клеток игрового поля */
-.cell {
-  width: 100%;
-  height: 100%;
-  background-color: #333;
-}
-
-/* Стили контролов */
-#controls {
-  text-align: center;
-  margin-top: 10px;
-}
-
-/* Дополнительные стили по вашему желанию */
+// Осталось 9 сигментов.
