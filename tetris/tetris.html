@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris Game</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Оптимизация для мобильных устройств -->
-    <link rel="stylesheet" href="tetris/style.css"> <!-- Исправлен путь к CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="tetrisCanvas"></canvas>
-    <div id="scoreboard">
-        <div id="score">Score: 0</div>
-        <div id="level">Level: 1</div>
-        <div id="time">Time: 0</div>
+    <div class="container">
+        <div class="game-board" id="gameBoard"></div>
+        <div class="next-piece-board" id="nextPieceBoard"></div>
+        <button id="startButton">Start Game</button>
     </div>
-    <button id="startButton">Start</button>
-    <script src="tetris/tetris.js"></script> <!-- Исправлен путь к JS -->
+    <script src="script.js"></script>
 </body>
 </html>
