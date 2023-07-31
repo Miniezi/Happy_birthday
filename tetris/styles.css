@@ -10,6 +10,7 @@ body {
 
 #tetrisCanvas {
     border: 2px solid #ccc;
+    max-width: 100%; /* Оптимизация для мобильных устройств - максимальная ширина */
 }
 
 #scoreboard {
