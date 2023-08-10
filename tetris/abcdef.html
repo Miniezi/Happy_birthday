@@ -1,22 +1,192 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тетрис</title>
-    <link rel="stylesheet" href="zyxwvu.css">
+  <title>Подземелья и монстры</title>
+  <style>
+    /* Добавьте стили для более красивого отображения */
+    button {
+      margin: 5px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="game-title">Тетрис</h1>
-        <div class="game-board" id="gameBoard"></div>
-        <div class="next-piece-board" id="nextPieceBoard"></div>
-        <div class="game-info">
-            <div class="score">Очки: 0</div>
-            <div class="level">Уровень: 1</div>
-        </div>
-        <button id="startButton">Начать игру</button>
-    </div>
-    <script src="ponmlk.js"></script>
+  <h1>Добро пожаловать в подземелья!</h1>
+  <p>Вы - отважный герой, исследующий опасные подземелья. Впереди много приключений и монстров.</p>
+  <p id="story"></p>
+  <p>Здоровье: <span id="playerHealth">20</span></p>
+  <p>Уровень: <span id="playerLevel">1</span></p>
+  <p>Опыт: <span id="playerExperience">0</span></p>
+  <p>Атака: <span id="playerAttack">5</span></p>
+  <p>Защита: <span id="playerDefense">0</span></p>
+  <p>Экипировка: <span id="playerEquippedItem">Ничего</span></p>
+  <p>Инвентарь: <span id="playerInventory"></span></p>
+  <button onclick="game.explore()">Исследовать</button>
+
+  <script>
+    class Player {
+      constructor() {
+        this.health = 20;
+        this.attack = 5;
+        this.defense = 0;
+        this.experience = 0;
+        this.level = 1;
+        this.inventory = [];
+        this.equippedItem = null;
+      }
+
+      gainExperience(amount) {
+        this.experience += amount;
+        this.checkLevelUp();
+      }
+
+      checkLevelUp() {
+        if (this.experience >= this.level * 100) {
+          this.level++;
+          this.health += 5;
+          this.attack += 2;
+          var storyElement = document.getElementById('story');
+          storyElement.innerHTML += '<p>Вы достигли уровня ' + this.level + '! Ваши характеристики улучшены.</p>';
+          document.getElementById('playerLevel').innerText = this.level;
+          document.getElementById('playerHealth').innerText = this.health;
+          document.getElementById('playerAttack').innerText = this.attack;
+        }
+      }
+
+      addItemToInventory(item) {
+        this.inventory.push(item);
+        var storyElement = document.getElementById('story');
+        storyElement.innerHTML += '<p>Вы нашли ' + item.name + ' в сундуке! Этот предмет может быть полезным.</p>';
+        document.getElementById('playerInventory').innerText = this.inventory.map(item => item.name).join(', ');
+      }
+
+      equipItem(item) {
+        if (this.equippedItem) {
+          this.attack -= this.equippedItem.attackBonus;
+          this.defense -= this.equippedItem.defenseBonus;
+        }
+
+        this.equippedItem = item;
+        this.attack += item.attackBonus;
+        this.defense += item.defenseBonus;
+
+        document.getElementById('playerEquippedItem').innerText = item.name;
+        document.getElementById('playerAttack').innerText = this.attack;
+        document.getElementById('playerDefense').innerText = this.defense;
+      }
+    }
+
+    class Item {
+      constructor(name, attackBonus, defenseBonus) {
+        this.name = name;
+        this.attackBonus = attackBonus || 0;
+        this.defenseBonus = defenseBonus || 0;
+      }
+    }
+
+    class Monster {
+      constructor(name, health, attack, experience, description) {
+        this.name = name;
+        this.health = health;
+        this.attack = attack;
+        this.experience = experience;
+        this.description = description;
+      }
+
+      attackPlayer() {
+        var player = game.player;
+        var playerHealth = document.getElementById('playerHealth');
+        var damage = Math.max(Math.floor(Math.random() * this.attack) - player.defense, 0);
+        player.health -= damage;
+        playerHealth.innerText = player.health;
+
+        var storyElement = document.getElementById('story');
+        storyElement.innerHTML += '<p>' + this.name + ' атакует вас и наносит ' + damage + ' урона.</p>';
+
+        if (player.health <= 0) {
+          storyElement.innerHTML += '<p>' + this.name + ' победил вас! Вы погибли, но ваша история живет дальше.</p>';
+          document.body.innerHTML += '<button onclick="game.continueExploring()">Продолжить исследование</button>';
+        }
+      }
+    }
+
+    class Game {
+      constructor() {
+        this.player = new Player();
+        this.monsters = [
+          new Monster("Гоблин", 8, 3, 10, "Маленький и уродливый гоблин, но очень злой."),
+          new Monster("Зомби", 10, 2, 15, "Зомби идет медленно, но он настойчив."),
+          new Monster("Вампир", 12, 4, 20, "Вампир собирается выпить вашу кровь!"),
+          new Monster("Дракон", 20, 5, 50, "Огромный дракон смертельно опасен."),
+          new Monster("Оборотень", 15, 3, 25, "Оборотень выходит из тени."),
+          new Monster("Живодер", 18, 4, 30, "Свирепый живодер готов атаковать.")
+        ];
+        this.items = [
+          new Item("Зелье здоровья"),
+          new Item("Острый меч", 3),
+          new Item("Свиток огня"),
+          new Item("Сломанный щит", 0, -2),
+          new Item("Золотой амулет", 0, 3)
+        ];
+      }
+
+      getRandomMonster() {
+        var randomIndex = Math.floor(Math.random() * this.monsters.length);
+        return this.monsters[randomIndex];
+      }
+
+      getRandomItem() {
+        var randomIndex = Math.floor(Math.random() * this.items.length);
+        return this.items[randomIndex];
+      }
+
+      explore() {
+        var storyElement = document.getElementById('story');
+        var randomNumber = Math.floor(Math.random() * 3) + 1;
+
+        if (randomNumber === 1) {
+          storyElement.innerHTML = 'Вы нашли сундук с сокровищами! Ваша удача не покидает вас.';
+          var item = this.getRandomItem();
+          this.player.addItemToInventory(item);
+          document.body.innerHTML += '<button onclick="game.continueExploring()">Продолжить исследование</button>';
+        } else if (randomNumber === 2) {
+          var monster = this.getRandomMonster();
+          storyElement.innerHTML = 'Вы столкнулись с ' + monster.name + '! ' + monster.description + ' Вам нужно сразить его.';
+          document.body.innerHTML += '<button onclick="game.fight(' + monster.health + ', ' + monster.attack + ', ' + monster.experience + ')">Сразить монстра</button>';
+        } else {
+          storyElement.innerHTML = 'Вы наткнулись на пустую комнату. Вернитесь обратно и продолжите поиск.';
+          document.body.innerHTML += '<button onclick="game.continueExploring()">Вернуться и исследовать дальше</button>';
+        }
+      }
+
+      continueExploring() {
+        var storyElement = document.getElementById('story');
+        storyElement.innerHTML = 'Вы продолжаете свои приключения в подземельях.';
+        document.body.innerHTML += '<button onclick="game.explore()">Исследовать</button>';
+      }
+
+      fight(monsterHealth, monsterAttack, experience) {
+        var storyElement = document.getElementById('story');
+        var playerAttack = Math.floor(Math.random() * this.player.attack) + 1;
+
+        while (this.player.health > 0 && monsterHealth > 0) {
+          monsterHealth -= playerAttack;
+          if (monsterHealth > 0) {
+            this.player.health -= monsterAttack;
+          }
+        }
+
+        if (this.player.health > 0) {
+          storyElement.innerHTML = 'Поздравляем! Вы победили монстра ' + monster.name + ', получаете ' + experience + ' опыта!';
+          this.player.gainExperience(experience);
+        } else {
+          storyElement.innerHTML = 'К сожалению, ' + monster.name + ' оказался сильнее. Вы погибли, но ваша история живет дальше.';
+        }
+
+        document.body.innerHTML += '<button onclick="game.continueExploring()">Продолжить исследование</button>';
+      }
+    }
+
+    var game = new Game();
+  </script>
 </body>
 </html>
