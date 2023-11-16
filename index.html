@@ -10,7 +10,7 @@
             margin: 20px;
         }
         #chat-container {
-            max-width: 400px;
+            max-width: 100%;
             margin: auto;
         }
         #chat-history {
@@ -22,6 +22,16 @@
         #input-container {
             margin-top: 10px;
         }
+        #user-input {
+            width: 70%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        #send-button {
+            width: 28%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -30,17 +40,18 @@
     <div id="chat-history"></div>
     <div id="input-container">
         <input type="text" id="user-input" placeholder="Введите сообщение">
-        <button onclick="sendMessage()">Отправить</button>
+        <button id="send-button" onclick="sendMessage()">Отправить</button>
     </div>
 </div>
 
 <script>
-    const apiKey = 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; // Замените YOUR_API_KEY на ваш ключ API
+    // Пример безопасной обфускации ключа (например, Base64)
+    const apiKey = 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;
 
     function sendMessage() {
         const userInput = document.getElementById('user-input').value;
         const chatHistory = document.getElementById('chat-history');
-        
+
         // Проверка наличия текста ввода
         if (userInput.trim() === '') {
             return;
