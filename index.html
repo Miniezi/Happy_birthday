@@ -1,34 +1,79 @@
 <!DOCTYPE html>
-<html lang="ru">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заголовок вашего сайта</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>ChatGPT Mobile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #chat-container {
+            max-width: 400px;
+            margin: auto;
+        }
+        #chat-history {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+        #input-container {
+            margin-top: 10px;
+        }
+    </style>
 </head>
-
 <body>
-    <header>
-        <div class="menu-btn">
-            <div class="menu-bar"></div>
-            <div class="menu-bar"></div>
-            <div class="menu-bar"></div>
-        </div>
-        <nav class="menu">
-            <ul>
-                <li><a href="#home">Главная</a></li>
-                <li><a href="#about">О нас</a></li>
-                <li><a href="#services">Услуги</a></li>
-                <li><a href="#contact">Контакты</a></li>
-                <li><a href="./tetris/abcdef.html">Тетрис</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <!-- Здесь разместите контент вашего сайта -->
+<div id="chat-container">
+    <div id="chat-history"></div>
+    <div id="input-container">
+        <input type="text" id="user-input" placeholder="Введите сообщение">
+        <button onclick="sendMessage()">Отправить</button>
+    </div>
+</div>
 
-    <script src="script.js"></script>
+<script>
+    const apiKey = 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; // Замените YOUR_API_KEY на ваш ключ API
+
+    function sendMessage() {
+        const userInput = document.getElementById('user-input').value;
+        const chatHistory = document.getElementById('chat-history');
+        
+        // Проверка наличия текста ввода
+        if (userInput.trim() === '') {
+            return;
+        }
+
+        // Отправка запроса к API
+        fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant.' },
+                    { role: 'user', content: userInput }
+                ]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const modelReply = data.choices[0].message.content;
+            // Добавление сообщения в историю чата
+            chatHistory.innerHTML += `<p><strong>Вы:</strong> ${userInput}</p>`;
+            chatHistory.innerHTML += `<p><strong>ЧатGPT:</strong> ${modelReply}</p>`;
+            // Очистка поля ввода
+            document.getElementById('user-input').value = '';
+            // Прокрутка вниз, чтобы видеть последние сообщения
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+
 </body>
-
 </html>
