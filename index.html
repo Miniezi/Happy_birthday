@@ -1,90 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Mobile</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #chat-container {
-            max-width: 100%;
-            margin: auto;
-        }
-        #chat-history {
-            border: 1px solid #ccc;
-            padding: 10px;
-            height: 200px;
-            overflow-y: scroll;
-        }
-        #input-container {
-            margin-top: 10px;
-        }
-        #user-input {
-            width: 70%;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-        #send-button {
-            width: 28%;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Чат с GPT-3</title>
 </head>
 <body>
+  <div id="chat-container">
+    <div id="chat-log"></div>
+    <input type="text" id="message-input" placeholder="Введите сообщение...">
+    <button onclick="sendMessage()">Отправить</button>
+  </div>
 
-<div id="chat-container">
-    <div id="chat-history"></div>
-    <div id="input-container">
-        <input type="text" id="user-input" placeholder="Введите сообщение">
-        <button id="send-button" onclick="sendMessage()">Отправить</button>
-    </div>
-</div>
-
-<script>
-    // Пример безопасной обфускации ключа (например, Base64)
-    const apiKey = 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;
-
+  <script>
     function sendMessage() {
-        const userInput = document.getElementById('user-input').value;
-        const chatHistory = document.getElementById('chat-history');
+      var messageInput = document.getElementById("message-input");
+      var chatLog = document.getElementById("chat-log");
+      var userMessage = messageInput.value;
 
-        // Проверка наличия текста ввода
-        if (userInput.trim() === '') {
-            return;
-        }
+      // Отображение сообщения пользователя в чате
+      chatLog.innerHTML += `<div class="user-message">${userMessage}</div>`;
 
-        // Отправка запроса к API
-        fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                messages: [
-                    { role: 'system', content: 'You are a helpful assistant.' },
-                    { role: 'user', content: userInput }
-                ]
-            })
-        })
+      // Очистка поля ввода сообщения
+      messageInput.value = "";
+
+      // Отправка сообщения пользователя на бэкенд
+      fetch("/get_response", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userMessage, language: "ru" }),
+      })
         .then(response => response.json())
         .then(data => {
-            const modelReply = data.choices[0].message.content;
-            // Добавление сообщения в историю чата
-            chatHistory.innerHTML += `<p><strong>Вы:</strong> ${userInput}</p>`;
-            chatHistory.innerHTML += `<p><strong>ЧатGPT:</strong> ${modelReply}</p>`;
-            // Очистка поля ввода
-            document.getElementById('user-input').value = '';
-            // Прокрутка вниз, чтобы видеть последние сообщения
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-        })
-        .catch(error => console.error('Error:', error));
-    }
-</script>
+          var aiResponse = data.response;
 
+          // Отображение ответа ИИ в чате
+          chatLog.innerHTML += `<div class="ai-message">${aiResponse}</div>`;
+        })
+        .catch(error => console.error("Ошибка при отправке сообщения на бэкенд:", error));
+    }
+  </script>
 </body>
 </html>
