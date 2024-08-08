@@ -1,30 +1,50 @@
-let score = 0;
-let timeLeft = 30;
-let timerInterval;
+let health = 100;
+let stamina = 100;
+let morale = 100;
 
-// Функция для обновления таймера
-function updateTimer() {
-    if (timeLeft <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById('clickButton').disabled = true;
-        alert('Время вышло! Ваш итоговый счёт: ' + score);
-        return;
+function updateStatus() {
+    document.getElementById('health').textContent = health;
+    document.getElementById('stamina').textContent = stamina;
+    document.getElementById('morale').textContent = morale;
+}
+
+function log(message) {
+    document.getElementById('log').textContent = message;
+}
+
+function gatherResources() {
+    if (stamina > 10) {
+        stamina -= 10;
+        health -= 5;
+        log('Вы собрали ресурсы. Здоровье и выносливость уменьшились.');
+    } else {
+        log('Вы слишком устали, чтобы собирать ресурсы.');
     }
-    document.getElementById('timer').textContent = timeLeft;
-    timeLeft--;
+    updateStatus();
 }
 
-// Функция для обработки нажатия кнопки
-function handleClick() {
-    score++;
-    document.getElementById('score').textContent = score;
+function buildShelter() {
+    if (stamina > 20) {
+        stamina -= 20;
+        morale += 10;
+        log('Вы построили укрытие. Мораль улучшилась.');
+    } else {
+        log('У вас недостаточно выносливости для постройки укрытия.');
+    }
+    updateStatus();
 }
 
-// Настройка игры
-function startGame() {
-    document.getElementById('clickButton').addEventListener('click', handleClick);
-    timerInterval = setInterval(updateTimer, 1000);
+function exploreIsland() {
+    if (stamina > 30) {
+        stamina -= 30;
+        health -= 10;
+        morale -= 5;
+        log('Вы исследовали остров. Здоровье и мораль ухудшились.');
+    } else {
+        log('Вы слишком устали, чтобы исследовать остров.');
+    }
+    updateStatus();
 }
 
-// Запуск игры
-startGame();
+// Изначальное обновление статуса
+updateStatus();
