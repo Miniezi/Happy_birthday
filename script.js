@@ -7,7 +7,7 @@ let playerDamage = 10;
 let currentLevel = 1;
 let board = [];
 
-// Функция для генерации игрового поля
+// Генерация игрового поля
 function generateBoard() {
     board = [];
     for (let y = 0; y < HEIGHT; y++) {
@@ -35,13 +35,13 @@ function generateBoard() {
     }
 }
 
-// Функция для отображения игрового поля
+// Отображение игрового поля
 function renderBoard() {
     let display = board.map(row => row.join('')).join('\n');
     document.getElementById('gameBoard').textContent = display;
 }
 
-// Функция для перемещения игрока
+// Перемещение игрока
 function movePlayer(direction) {
     const newPosition = { ...playerPosition };
 
@@ -59,13 +59,13 @@ function movePlayer(direction) {
     }
 }
 
-// Проверка на допустимость перемещения
+// Проверка допустимости перемещения
 function isValidMove(position) {
     return position.x > 0 && position.x < WIDTH - 1 &&
            position.y > 0 && position.y < HEIGHT - 1;
 }
 
-// Обработка взаимодействия с текущей ячейкой
+// Обработка взаимодействия с объектами
 function handleInteraction() {
     let currentTile = board[playerPosition.y][playerPosition.x];
 
@@ -88,7 +88,7 @@ function handleInteraction() {
     }
 }
 
-// Функция активации временного усиления
+// Активация временного усиления
 function activateTemporaryBoost() {
     let rand = Math.random();
     if (rand < 0.5) {
@@ -104,7 +104,7 @@ function activateTemporaryBoost() {
     }
 }
 
-// Функция применения постоянного усиления
+// Применение постоянного усиления
 function applyPermanentBoost() {
     let rand = Math.random();
     if (rand < 0.5) {
@@ -118,7 +118,7 @@ function applyPermanentBoost() {
     updateUI();
 }
 
-// Функция перехода на следующий уровень
+// Переход на следующий уровень
 function nextLevel() {
     currentLevel++;
     playerPosition = { x: 1, y: 1 }; // возвращаем игрока на начальную позицию
@@ -128,7 +128,7 @@ function nextLevel() {
     updateUI();
 }
 
-// Функция для обновления состояния доски и интерфейса
+// Обновление состояния доски и интерфейса
 function updateBoard() {
     // Очищаем доску
     board = board.map(row => row.map(cell => (cell === '@' ? '.' : cell)));
@@ -137,14 +137,14 @@ function updateBoard() {
     board[playerPosition.y][playerPosition.x] = '@';
 }
 
-// Функция для обновления характеристик персонажа
+// Обновление характеристик персонажа
 function updateUI() {
     document.getElementById('health').textContent = playerHealth;
     document.getElementById('damage').textContent = playerDamage;
     document.getElementById('level').textContent = currentLevel;
 }
 
-// Функция для отображения сообщений
+// Отображение сообщений
 function log(message) {
     document.getElementById('log').textContent = message;
 }
