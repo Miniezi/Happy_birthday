@@ -4,10 +4,13 @@ const INITIAL_ENEMY_HEALTH = 5;
 const INITIAL_ENEMY_DAMAGE = 1;
 const INITIAL_PLAYER_HEALTH = 100;
 const INITIAL_PLAYER_DAMAGE = 10;
+const SHIELD_DURATION = 10000; // 10 seconds
+const MAX_HEALTH = INITIAL_PLAYER_HEALTH;
 let playerPosition = { x: 1, y: 1 };
 let playerHealth = INITIAL_PLAYER_HEALTH;
 let playerDamage = INITIAL_PLAYER_DAMAGE;
 let currentLevel = 1;
+let hasShield = false;
 let board = [];
 let enemies = [];
 
@@ -45,14 +48,23 @@ function generateBoard() {
 function updateEnemies() {
     for (let enemy of enemies) {
         const direction = Math.random();
-        if (direction < 0.25 && isValidMove({ x: enemy.x, y: enemy.y - 1 })) {
-            enemy.y -= 1; // move up
-        } else if (direction < 0.5 && isValidMove({ x: enemy.x, y: enemy.y + 1 })) {
-            enemy.y += 1; // move down
-        } else if (direction < 0.75 && isValidMove({ x: enemy.x - 1, y: enemy.y })) {
-            enemy.x -= 1; // move left
-        } else if (isValidMove({ x: enemy.x + 1, y: enemy.y })) {
-            enemy.x += 1; // move right
+        const newPosition = { x: enemy.x, y: enemy.y };
+
+        if (direction < 0.25 && isValidMove({ x: newPosition.x, y: newPosition.y - 1 })) {
+            newPosition.y -= 1; // move up
+        } else if (direction < 0.5 && isValidMove({ x: newPosition.x, y: newPosition.y + 1 })) {
+            newPosition.y += 1; // move down
+        } else if (direction < 0.75 && isValidMove({ x: newPosition.x - 1, y: newPosition.y })) {
+            newPosition.x -= 1; // move left
+        } else if (isValidMove({ x: newPosition.x + 1, y: newPosition.y })) {
+            newPosition.x += 1; // move right
+        }
+
+        if (newPosition.x !== enemy.x || newPosition.y !== enemy.y) {
+            board[enemy.y][enemy.x] = '.';
+            enemy.x = newPosition.x;
+            enemy.y = newPosition.y;
+            board[enemy.y][enemy.x] = '§';
         }
     }
 }
@@ -102,7 +114,7 @@ function handleInteraction() {
     if (currentTile === '§') {
         attackEnemy(playerPosition.x, playerPosition.y);
     } else if (currentTile === '+') {
-        playerHealth = Math.min(playerHealth + 20, INITIAL_PLAYER_HEALTH);
+        playerHealth = Math.min(playerHealth + 20, MAX_HEALTH);
         log('Вы нашли аптечку. Здоровье восстановлено: ' + playerHealth);
     } else if (currentTile === '!') {
         activateTemporaryBoost();
@@ -117,28 +129,26 @@ function handleInteraction() {
 function activateTemporaryBoost() {
     let rand = Math.random();
     if (rand < 0.5) {
-        log('Вы получили временное ускорение!');
-        setTimeout(() => {
-            log('Эффект ускорения закончился.');
-        }, 10000); // Время действия 10 секунд
+        playerDamage += 5;
+        log('Вы нашли временное усиление! Урон увеличен до ' + playerDamage);
     } else {
-        log('Вы получили временную защиту!');
-        setTimeout(() => {
-            log('Эффект защиты закончился.');
-        }, 10000); // Время действия 10 секунд
+        if (!hasShield) {
+            hasShield = true;
+            log('Вы нашли щит! Блокирует входящий урон.');
+            setTimeout(() => {
+                hasShield = false;
+                log('Щит истек!');
+            }, SHIELD_DURATION);
+        } else {
+            log('Щит уже активен!');
+        }
     }
 }
 
 // Применение постоянного усиления
 function applyPermanentBoost() {
-    let rand = Math.random();
-    if (rand < 0.5) {
-        playerHealth = Math.min(playerHealth + 20, INITIAL_PLAYER_HEALTH);
-        log('Максимальное здоровье увеличено до ' + playerHealth + '!');
-    } else {
-        playerDamage += 5;
-        log('Урон увеличен до ' + playerDamage + '!');
-    }
+    playerDamage += 5;
+    log('Постоянное усиление! Урон увеличен до ' + playerDamage);
 }
 
 // Переход на следующий уровень
@@ -176,6 +186,7 @@ function updateBoard() {
 // Обновление интерфейса
 function updateUI() {
     document.getElementById('health').textContent = playerHealth;
+    document.getElementById('max-health').textContent = MAX_HEALTH;
     document.getElementById('damage').textContent = playerDamage;
     document.getElementById('level').textContent = currentLevel;
     document.getElementById('enemy-damage').textContent = INITIAL_ENEMY_DAMAGE + currentLevel - 1;
