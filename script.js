@@ -7,12 +7,7 @@ let playerDamage = 10;
 let currentLevel = 1;
 let board = [];
 
-function updateUI() {
-    document.getElementById('health').textContent = playerHealth;
-    document.getElementById('damage').textContent = playerDamage;
-    document.getElementById('level').textContent = currentLevel;
-}
-
+// Функция для генерации игрового поля
 function generateBoard() {
     board = [];
     for (let y = 0; y < HEIGHT; y++) {
@@ -40,11 +35,13 @@ function generateBoard() {
     }
 }
 
+// Функция для отображения игрового поля
 function renderBoard() {
     let display = board.map(row => row.join('')).join('\n');
     document.getElementById('gameBoard').textContent = display;
 }
 
+// Функция для перемещения игрока
 function movePlayer(direction) {
     const newPosition = { ...playerPosition };
 
@@ -56,16 +53,19 @@ function movePlayer(direction) {
     if (isValidMove(newPosition)) {
         playerPosition = newPosition;
         handleInteraction();
+        updateBoard();
+        renderBoard();
+        updateUI();
     }
-
-    renderBoard();
 }
 
+// Проверка на допустимость перемещения
 function isValidMove(position) {
     return position.x > 0 && position.x < WIDTH - 1 &&
            position.y > 0 && position.y < HEIGHT - 1;
 }
 
+// Обработка взаимодействия с текущей ячейкой
 function handleInteraction() {
     let currentTile = board[playerPosition.y][playerPosition.x];
 
@@ -86,11 +86,9 @@ function handleInteraction() {
     } else if (currentTile === '>') {
         nextLevel();
     }
-
-    board[playerPosition.y][playerPosition.x] = '.';
-    updateUI();
 }
 
+// Функция активации временного усиления
 function activateTemporaryBoost() {
     let rand = Math.random();
     if (rand < 0.5) {
@@ -106,6 +104,7 @@ function activateTemporaryBoost() {
     }
 }
 
+// Функция применения постоянного усиления
 function applyPermanentBoost() {
     let rand = Math.random();
     if (rand < 0.5) {
@@ -119,6 +118,7 @@ function applyPermanentBoost() {
     updateUI();
 }
 
+// Функция перехода на следующий уровень
 function nextLevel() {
     currentLevel++;
     playerPosition = { x: 1, y: 1 }; // возвращаем игрока на начальную позицию
@@ -128,6 +128,23 @@ function nextLevel() {
     updateUI();
 }
 
+// Функция для обновления состояния доски и интерфейса
+function updateBoard() {
+    // Очищаем доску
+    board = board.map(row => row.map(cell => (cell === '@' ? '.' : cell)));
+
+    // Устанавливаем новую позицию игрока
+    board[playerPosition.y][playerPosition.x] = '@';
+}
+
+// Функция для обновления характеристик персонажа
+function updateUI() {
+    document.getElementById('health').textContent = playerHealth;
+    document.getElementById('damage').textContent = playerDamage;
+    document.getElementById('level').textContent = currentLevel;
+}
+
+// Функция для отображения сообщений
 function log(message) {
     document.getElementById('log').textContent = message;
 }
