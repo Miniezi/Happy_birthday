@@ -6,6 +6,7 @@ const INITIAL_PLAYER_HEALTH = 100;
 const INITIAL_PLAYER_DAMAGE = 10;
 const SHIELD_DURATION = 10000; // 10 seconds
 const MAX_HEALTH = INITIAL_PLAYER_HEALTH;
+
 let playerPosition = { x: 1, y: 1 };
 let playerHealth = INITIAL_PLAYER_HEALTH;
 let playerDamage = INITIAL_PLAYER_DAMAGE;
@@ -27,7 +28,12 @@ function generateBoard() {
                 row.push('@'); // игрок
             } else if (Math.random() < 0.05 * currentLevel) {
                 row.push('§'); // враг
-                enemies.push({ x, y, health: INITIAL_ENEMY_HEALTH + currentLevel - 1, damage: INITIAL_ENEMY_DAMAGE + currentLevel - 1 });
+                enemies.push({
+                    x, 
+                    y, 
+                    health: INITIAL_ENEMY_HEALTH + currentLevel - 1, 
+                    damage: INITIAL_ENEMY_DAMAGE + currentLevel - 1
+                });
             } else if (Math.random() < 0.1) {
                 row.push('+'); // предмет, восстанавливающий здоровье
             } else if (Math.random() < 0.1) {
@@ -35,7 +41,7 @@ function generateBoard() {
             } else if (Math.random() < 0.05) {
                 row.push('$'); // постоянное усиление
             } else if (x === Math.floor(WIDTH / 2) && y === HEIGHT - 2) {
-                row.push('>'); // переход на следующий уровень
+                row.push('>'); // выход на следующий уровень
             } else {
                 row.push('.'); // пустое место
             }
@@ -50,23 +56,33 @@ function updateEnemies() {
         const direction = Math.random();
         const newPosition = { x: enemy.x, y: enemy.y };
 
-        if (direction < 0.25 && isValidMove({ x: newPosition.x, y: newPosition.y - 1 })) {
-            newPosition.y -= 1; // move up
-        } else if (direction < 0.5 && isValidMove({ x: newPosition.x, y: newPosition.y + 1 })) {
-            newPosition.y += 1; // move down
-        } else if (direction < 0.75 && isValidMove({ x: newPosition.x - 1, y: newPosition.y })) {
-            newPosition.x -= 1; // move left
-        } else if (isValidMove({ x: newPosition.x + 1, y: newPosition.y })) {
-            newPosition.x += 1; // move right
-        }
+        if (direction < 0.25) newPosition.y -= 1; // move up
+        else if (direction < 0.5) newPosition.y += 1; // move down
+        else if (direction < 0.75) newPosition.x -= 1; // move left
+        else newPosition.x += 1; // move right
 
-        if (newPosition.x !== enemy.x || newPosition.y !== enemy.y) {
+        if (isValidMove(newPosition)) {
             board[enemy.y][enemy.x] = '.';
             enemy.x = newPosition.x;
             enemy.y = newPosition.y;
             board[enemy.y][enemy.x] = '§';
         }
     }
+}
+
+// Проверка допустимости перемещения
+function isValidMove(position) {
+    if (position.x <= 0 || position.x >= WIDTH - 1 ||
+        position.y <= 0 || position.y >= HEIGHT - 1) {
+        return false;
+    }
+
+    // Проверяем, не занята ли позиция игроком или другим врагом
+    if (board[position.y][position.x] === '@' || board[position.y][position.x] === '§') {
+        return false;
+    }
+
+    return true;
 }
 
 // Отображение игрового поля
@@ -98,13 +114,8 @@ function movePlayer(direction) {
         updateBoard();
         renderBoard();
         updateUI();
+        enemyAttack();
     }
-}
-
-// Проверка допустимости перемещения
-function isValidMove(position) {
-    return position.x > 0 && position.x < WIDTH - 1 &&
-           position.y > 0 && position.y < HEIGHT - 1;
 }
 
 // Обработка взаимодействия с объектами
@@ -116,10 +127,13 @@ function handleInteraction() {
     } else if (currentTile === '+') {
         playerHealth = Math.min(playerHealth + 20, MAX_HEALTH);
         log('Вы нашли аптечку. Здоровье восстановлено: ' + playerHealth);
+        board[playerPosition.y][playerPosition.x] = '.';
     } else if (currentTile === '!') {
         activateTemporaryBoost();
+        board[playerPosition.y][playerPosition.x] = '.';
     } else if (currentTile === '$') {
         applyPermanentBoost();
+        board[playerPosition.y][playerPosition.x] = '.';
     } else if (currentTile === '>') {
         nextLevel();
     }
@@ -131,17 +145,15 @@ function activateTemporaryBoost() {
     if (rand < 0.5) {
         playerDamage += 5;
         log('Вы нашли временное усиление! Урон увеличен до ' + playerDamage);
+    } else if (!hasShield) {
+        hasShield = true;
+        log('Вы нашли щит! Блокирует входящий урон.');
+        setTimeout(() => {
+            hasShield = false;
+            log('Щит истек!');
+        }, SHIELD_DURATION);
     } else {
-        if (!hasShield) {
-            hasShield = true;
-            log('Вы нашли щит! Блокирует входящий урон.');
-            setTimeout(() => {
-                hasShield = false;
-                log('Щит истек!');
-            }, SHIELD_DURATION);
-        } else {
-            log('Щит уже активен!');
-        }
+        log('Щит уже активен!');
     }
 }
 
@@ -195,7 +207,28 @@ function updateUI() {
 // Логирование сообщений
 function log(message) {
     const logElement = document.getElementById('log');
-    logElement.textContent += message + '\n';
+    logElement.textContent = message;
+}
+
+// Обработка атаки врага
+function enemyAttack() {
+    for (let enemy of enemies) {
+        if (enemy.x === playerPosition.x && enemy.y === playerPosition.y) {
+            if (hasShield) {
+                log('Щит блокирует входящий урон!');
+            } else {
+                playerHealth -= enemy.damage;
+                if (playerHealth <= 0) {
+                    log('Вы погибли!');
+                    alert('Game Over');
+                    // Перезагрузить игру
+                    window.location.reload();
+                } else {
+                    log('Враг атакует! Ваше здоровье: ' + playerHealth);
+                }
+            }
+        }
+    }
 }
 
 // Инициализация игры
