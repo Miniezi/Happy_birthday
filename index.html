@@ -12,16 +12,19 @@
         <p>Урон: <span id="damage">10</span></p>
         <p>Уровень: <span id="level">1</span></p>
     </div>
-    <pre id="gameBoard"></pre>
-    <div id="log"></div>
-
+    <div id="gameContainer">
+        <pre id="gameBoard"></pre>
+        <div id="log"></div>
+    </div>
+    
     <!-- Виртуальные кнопки управления -->
     <div id="controls">
-        <button onclick="movePlayer('up')">⬆️</button>
-        <br>
-        <button onclick="movePlayer('left')">⬅️</button>
-        <button onclick="movePlayer('down')">⬇️</button>
-        <button onclick="movePlayer('right')">➡️</button>
+        <button class="control-btn" onclick="movePlayer('up')">⬆️</button>
+        <div class="control-row">
+            <button class="control-btn" onclick="movePlayer('left')">⬅️</button>
+            <button class="control-btn" onclick="movePlayer('down')">⬇️</button>
+            <button class="control-btn" onclick="movePlayer('right')">➡️</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
