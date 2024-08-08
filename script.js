@@ -3,10 +3,12 @@ const HEIGHT = 10;
 let playerPosition = { x: 1, y: 1 };
 let playerHealth = 100;
 let maxHealth = 100;
+let playerDamage = 10;
 let temporaryBoosts = {
     speed: false,
     protection: false
 };
+let currentLevel = 1;
 let board = [];
 
 function generateBoard() {
@@ -18,19 +20,18 @@ function generateBoard() {
                 row.push('|'); // стены
             } else if (x === playerPosition.x && y === playerPosition.y) {
                 row.push('@'); // игрок
+            } else if (Math.random() < 0.05 * currentLevel) {
+                row.push('§'); // враг
+            } else if (Math.random() < 0.1) {
+                row.push('+'); // предмет, восстанавливающий здоровье
+            } else if (Math.random() < 0.15) {
+                row.push('!'); // временное усиление
+            } else if (Math.random() < 0.18) {
+                row.push('$'); // постоянное усиление
+            } else if (y === HEIGHT - 2 && Math.random() < 0.2) {
+                row.push('>'); // выход на следующий уровень
             } else {
-                let rand = Math.random();
-                if (rand < 0.05) {
-                    row.push('§'); // враг
-                } else if (rand < 0.1) {
-                    row.push('+'); // предмет, восстанавливающий здоровье
-                } else if (rand < 0.15) {
-                    row.push('!'); // временное усиление
-                } else if (rand < 0.18) {
-                    row.push('$'); // постоянное усиление
-                } else {
-                    row.push('.'); // пустое место
-                }
+                row.push('.'); // пустое место
             }
         }
         board.push(row);
@@ -72,6 +73,10 @@ function handleInteraction() {
         } else {
             playerHealth -= 20;
             log('Вы были атакованы врагом! Здоровье: ' + playerHealth);
+            if (Math.random() < 0.3) { // 30% шанс на получение бафа урона
+                playerDamage += 5;
+                log('Вы получили баф на урон! Урон: ' + playerDamage);
+            }
         }
     } else if (currentTile === '+') {
         playerHealth = Math.min(playerHealth + 20, maxHealth);
@@ -80,6 +85,8 @@ function handleInteraction() {
         activateTemporaryBoost();
     } else if (currentTile === '$') {
         applyPermanentBoost();
+    } else if (currentTile === '>') {
+        nextLevel();
     }
 
     board[playerPosition.y][playerPosition.x] = '.';
@@ -93,14 +100,14 @@ function activateTemporaryBoost() {
         setTimeout(() => {
             temporaryBoosts.speed = false;
             log('Эффект ускорения закончился.');
-        }, 5000);
+        }, 10000); // Время действия увеличено до 10 секунд
     } else {
         temporaryBoosts.protection = true;
         log('Вы получили временную защиту!');
         setTimeout(() => {
             temporaryBoosts.protection = false;
             log('Эффект защиты закончился.');
-        }, 5000);
+        }, 10000); // Время действия увеличено до 10 секунд
     }
 }
 
@@ -111,9 +118,16 @@ function applyPermanentBoost() {
         playerHealth = maxHealth;
         log('Максимальное здоровье увеличено до ' + maxHealth + '!');
     } else {
-        log('Ваши способности улучшены!');
-        // Можно добавить другие постоянные усиления по желанию
+        playerDamage += 5;
+        log('Ваш урон увеличен до ' + playerDamage + '!');
     }
+}
+
+function nextLevel() {
+    currentLevel++;
+    playerPosition = { x: 1, y: 1 }; // возвращаем игрока на начальную позицию
+    log('Вы перешли на уровень ' + currentLevel + '! Враги стали сильнее.');
+    generateBoard();
 }
 
 function log(message) {
