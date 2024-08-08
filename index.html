@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кликер на время</title>
+    <title>Выживание на острове</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Кликер на время</h1>
-        <p>Очки: <span id="score">0</span></p>
-        <p>Оставшееся время: <span id="timer">30</span> секунд</p>
-        <button id="clickButton">Нажми меня!</button>
+        <h1>Выживание на острове</h1>
+        <div id="status">
+            <p>Здоровье: <span id="health">100</span></p>
+            <p>Выносливость: <span id="stamina">100</span></p>
+            <p>Мораль: <span id="morale">100</span></p>
+        </div>
+        <div id="actions">
+            <button onclick="gatherResources()">Собирать ресурсы</button>
+            <button onclick="buildShelter()">Строить укрытие</button>
+            <button onclick="exploreIsland()">Исследовать остров</button>
+        </div>
+        <p id="log"></p>
     </div>
     <script src="script.js"></script>
 </body>
