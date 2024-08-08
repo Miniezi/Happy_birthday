@@ -144,10 +144,10 @@ function activateTemporaryBoost() {
     let rand = Math.random();
     if (rand < 0.5) {
         playerDamage += 5;
-        log('Вы нашли временное усиление! Урон увеличен до ' + playerDamage);
+        log('💪 Вы нашли временное усиление! Урон увеличен до ' + playerDamage);
     } else if (!hasShield) {
         hasShield = true;
-        log('Вы нашли щит! Блокирует входящий урон.');
+        log('🛡️ Вы нашли щит! Блокирует входящий урон.');
         setTimeout(() => {
             hasShield = false;
             log('Щит истек!');
@@ -160,7 +160,7 @@ function activateTemporaryBoost() {
 // Применение постоянного усиления
 function applyPermanentBoost() {
     playerDamage += 5;
-    log('Постоянное усиление! Урон увеличен до ' + playerDamage);
+    log('⚔️ Постоянное усиление! Урон увеличен до ' + playerDamage);
 }
 
 // Переход на следующий уровень
@@ -180,7 +180,7 @@ function attackEnemy(x, y) {
     if (enemy) {
         enemy.health -= playerDamage;
         if (enemy.health <= 0) {
-            log('Враг повержен!');
+            log('💥 Враг повержен!');
             enemies = enemies.filter(e => e !== enemy);
             board[y][x] = '.';
         } else {
@@ -215,11 +215,11 @@ function enemyAttack() {
     for (let enemy of enemies) {
         if (enemy.x === playerPosition.x && enemy.y === playerPosition.y) {
             if (hasShield) {
-                log('Щит блокирует входящий урон!');
+                log('🛡️ Щит блокирует входящий урон!');
             } else {
                 playerHealth -= enemy.damage;
                 if (playerHealth <= 0) {
-                    log('Вы погибли!');
+                    log('💀 Вы погибли!');
                     alert('Game Over');
                     // Перезагрузить игру
                     window.location.reload();
@@ -231,11 +231,36 @@ function enemyAttack() {
     }
 }
 
+// Обработка урона при перемещении рядом с врагами
+function checkProximityDamage() {
+    for (let enemy of enemies) {
+        if (Math.abs(playerPosition.x - enemy.x) <= 1 && Math.abs(playerPosition.y - enemy.y) <= 1) {
+            if (!hasShield) {
+                playerHealth -= enemy.damage;
+                if (playerHealth <= 0) {
+                    log('💀 Вы погибли!');
+                    alert('Game Over');
+                    window.location.reload();
+                } else {
+                    log('Враг рядом! Ваше здоровье: ' + playerHealth);
+                }
+            }
+        }
+    }
+}
+
 // Инициализация игры
-function initGame() {
+function initializeGame() {
     generateBoard();
     renderBoard();
     updateUI();
+
+    document.getElementById('moveUp').addEventListener('click', () => movePlayer('up'));
+    document.getElementById('moveDown').addEventListener('click', () => movePlayer('down'));
+    document.getElementById('moveLeft').addEventListener('click', () => movePlayer('left'));
+    document.getElementById('moveRight').addEventListener('click', () => movePlayer('right'));
+
+    setInterval(checkProximityDamage, 1000); // Проверка урона от врагов раз в секунду
 }
 
-initGame();
+initializeGame();
