@@ -3,20 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Текстовый Рогалик</title>
+    <title>Roguelike Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Текстовый Рогалик</h1>
-        <pre id="gameBoard"></pre>
-        <div id="controls">
-            <button onclick="movePlayer('up')">⬆️</button><br>
-            <button onclick="movePlayer('left')">⬅️</button>
-            <button onclick="movePlayer('down')">⬇️</button>
-            <button onclick="movePlayer('right')">➡️</button>
-        </div>
+    <div id="characteristics">
+        <p>Здоровье: <span id="health">100</span></p>
+        <p>Урон: <span id="damage">10</span></p>
+        <p>Уровень: <span id="level">1</span></p>
     </div>
+    <pre id="gameBoard"></pre>
+    <div id="log"></div>
+
+    <!-- Виртуальные кнопки управления -->
+    <div id="controls">
+        <button onclick="movePlayer('up')">⬆️</button>
+        <br>
+        <button onclick="movePlayer('left')">⬅️</button>
+        <button onclick="movePlayer('down')">⬇️</button>
+        <button onclick="movePlayer('right')">➡️</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
