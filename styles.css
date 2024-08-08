@@ -4,11 +4,17 @@ body {
     flex-direction: column;
     align-items: center;
     background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
 }
 
 #characteristics {
-    margin-bottom: 10px;
+    margin: 10px;
     font-size: 18px;
+}
+
+#gameContainer {
+    position: relative;
 }
 
 #gameBoard {
@@ -17,6 +23,8 @@ body {
     background-color: #fff;
     padding: 10px;
     border: 1px solid #000;
+    white-space: pre-wrap; /* To preserve spaces and line breaks */
+    overflow: hidden;
     margin-bottom: 10px;
 }
 
@@ -30,11 +38,28 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 10px;
 }
 
-#controls button {
-    width: 50px;
-    height: 50px;
+.control-btn {
+    width: 60px;
+    height: 60px;
     font-size: 24px;
     margin: 5px;
+    background-color: #ddd;
+    border: none;
+    border-radius: 5px;
+}
+
+.control-row {
+    display: flex;
+    justify-content: center;
+}
+
+@media (min-width: 600px) {
+    #controls {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+    }
 }
