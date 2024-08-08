@@ -3,31 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roguelike Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #gameBoard {
+            white-space: pre;
+            font-family: monospace;
+            font-size: 16px;
+            width: 320px; /* фиксированная ширина для игрового поля */
+            height: 320px; /* фиксированная высота для игрового поля */
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .controls button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .controls button:active {
+            background-color: #45a049;
+        }
+        #stats {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        #log {
+            width: 320px;
+            height: 100px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        #startButton {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #startButton:active {
+            background-color: #007BB5;
+        }
+    </style>
 </head>
 <body>
-    <div id="characteristics">
-        <p>Здоровье: <span id="health">100</span> / <span id="max-health">100</span></p>
-        <p>Урон: <span id="damage">10</span></p>
-        <p>Уровень: <span id="level">1</span></p>
-        <p>Урон врага: <span id="enemy-damage">1</span></p>
+    <div id="stats">
+        💖 Здоровье: <span id="health"></span> / <span id="max-health"></span><br>
+        ⚔️ Урон: <span id="damage"></span><br>
+        🌟 Уровень: <span id="level"></span><br>
+        🕹️ Враги: <span id="enemy-count"></span>
     </div>
-    <div id="gameContainer">
-        <pre id="gameBoard"></pre>
-        <div id="log"></div>
+    <div id="gameBoard"></div>
+    <div class="controls">
+        <button id="moveUp">⬆️</button>
+        <button id="moveLeft">⬅️</button>
+        <button id="moveRight">➡️</button>
+        <button id="moveDown">⬇️</button>
     </div>
-    
-    <!-- Виртуальные кнопки управления -->
-    <div id="controls">
-        <button class="control-btn" onclick="movePlayer('up')">⬆️</button>
-        <div class="control-row">
-            <button class="control-btn" onclick="movePlayer('left')">⬅️</button>
-            <button class="control-btn" onclick="movePlayer('down')">⬇️</button>
-            <button class="control-btn" onclick="movePlayer('right')">➡️</button>
-        </div>
-    </div>
-
+    <button id="startButton">Старт</button>
+    <div id="log"></div>
     <script src="script.js"></script>
 </body>
 </html>
