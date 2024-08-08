@@ -1,46 +1,18 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Чат с GPT-3</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кликер на время</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="chat-container">
-    <div id="chat-log"></div>
-    <input type="text" id="message-input" placeholder="Введите сообщение...">
-    <button onclick="sendMessage()">Отправить</button>
-  </div>
-
-  <script>
-    function sendMessage() {
-      var messageInput = document.getElementById("message-input");
-      var chatLog = document.getElementById("chat-log");
-      var userMessage = messageInput.value;
-
-      // Отображение сообщения пользователя в чате
-      chatLog.innerHTML += `<div class="user-message">${userMessage}</div>`;
-
-      // Очистка поля ввода сообщения
-      messageInput.value = "";
-
-      // Отправка сообщения пользователя на бэкенд
-      fetch("/get_response", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: userMessage, language: "ru" }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          var aiResponse = data.response;
-
-          // Отображение ответа ИИ в чате
-          chatLog.innerHTML += `<div class="ai-message">${aiResponse}</div>`;
-        })
-        .catch(error => console.error("Ошибка при отправке сообщения на бэкенд:", error));
-    }
-  </script>
+    <div class="container">
+        <h1>Кликер на время</h1>
+        <p>Очки: <span id="score">0</span></p>
+        <p>Оставшееся время: <span id="timer">30</span> секунд</p>
+        <button id="clickButton">Нажми меня!</button>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
