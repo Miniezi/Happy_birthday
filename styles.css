@@ -4,25 +4,34 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #e0f7fa;
+    font-family: monospace;
+    background-color: #f4f4f4;
 }
 
 .container {
     text-align: center;
 }
 
+#gameBoard {
+    font-size: 20px;
+    line-height: 1.2;
+}
+
+#controls {
+    margin-top: 20px;
+}
+
 button {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 20px;
     margin: 5px;
     cursor: pointer;
     border: none;
-    background-color: #00796b;
+    background-color: #007bff;
     color: white;
     border-radius: 5px;
 }
 
-button:hover {
-    background-color: #004d40;
+button:active {
+    background-color: #0056b3;
 }
