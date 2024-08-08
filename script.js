@@ -2,23 +2,26 @@ const WIDTH = 10;
 const HEIGHT = 10;
 const INITIAL_ENEMY_HEALTH = 5;
 const INITIAL_ENEMY_DAMAGE = 1;
-const INITIAL_PLAYER_HEALTH = 100;
-const INITIAL_PLAYER_DAMAGE = 10;
+const INITIAL_PLAYER_HEALTH = 20;
+const INITIAL_PLAYER_DAMAGE = 2;
 const SHIELD_DURATION = 10000; // 10 seconds
 const MAX_HEALTH = INITIAL_PLAYER_HEALTH;
 
-let playerPosition = { x: 1, y: 1 };
+let playerPosition = { x: Math.floor(WIDTH / 2), y: 0 };
 let playerHealth = INITIAL_PLAYER_HEALTH;
 let playerDamage = INITIAL_PLAYER_DAMAGE;
 let currentLevel = 1;
 let hasShield = false;
 let board = [];
 let enemies = [];
+let items = [];
+let gameStarted = false;
 
 // Генерация игрового поля
 function generateBoard() {
     board = [];
     enemies = [];
+    items = [];
     for (let y = 0; y < HEIGHT; y++) {
         let row = [];
         for (let x = 0; x < WIDTH; x++) {
@@ -26,7 +29,7 @@ function generateBoard() {
                 row.push('|'); // стены
             } else if (x === playerPosition.x && y === playerPosition.y) {
                 row.push('@'); // игрок
-            } else if (Math.random() < 0.05 * currentLevel) {
+            } else if (Math.random() < 0.1) {
                 row.push('§'); // враг
                 enemies.push({
                     x, 
@@ -35,11 +38,11 @@ function generateBoard() {
                     damage: INITIAL_ENEMY_DAMAGE + currentLevel - 1
                 });
             } else if (Math.random() < 0.1) {
-                row.push('+'); // предмет, восстанавливающий здоровье
+                row.push('+'); // аптечка
             } else if (Math.random() < 0.1) {
-                row.push('!'); // временное усиление
-            } else if (Math.random() < 0.05) {
-                row.push('$'); // постоянное усиление
+                row.push('!'); // щит
+            } else if (Math.random() < 0.1) {
+                row.push('*'); // усиление урона
             } else if (x === Math.floor(WIDTH / 2) && y === HEIGHT - 2) {
                 row.push('>'); // выход на следующий уровень
             } else {
@@ -111,7 +114,6 @@ function movePlayer(direction) {
         playerPosition = newPosition;
         handleInteraction();
         updateEnemies();
-        updateBoard();
         renderBoard();
         updateUI();
         enemyAttack();
@@ -125,29 +127,26 @@ function handleInteraction() {
     if (currentTile === '§') {
         attackEnemy(playerPosition.x, playerPosition.y);
     } else if (currentTile === '+') {
-        playerHealth = Math.min(playerHealth + 20, MAX_HEALTH);
+        playerHealth = Math.min(playerHealth + 5, MAX_HEALTH);
         log('Вы нашли аптечку. Здоровье восстановлено: ' + playerHealth);
         board[playerPosition.y][playerPosition.x] = '.';
     } else if (currentTile === '!') {
-        activateTemporaryBoost();
+        activateShield();
         board[playerPosition.y][playerPosition.x] = '.';
-    } else if (currentTile === '$') {
-        applyPermanentBoost();
+    } else if (currentTile === '*') {
+        playerDamage += 1;
+        log('Вы нашли усиление урона! Урон увеличен до ' + playerDamage);
         board[playerPosition.y][playerPosition.x] = '.';
     } else if (currentTile === '>') {
         nextLevel();
     }
 }
 
-// Активация временного усиления
-function activateTemporaryBoost() {
-    let rand = Math.random();
-    if (rand < 0.5) {
-        playerDamage += 5;
-        log('💪 Вы нашли временное усиление! Урон увеличен до ' + playerDamage);
-    } else if (!hasShield) {
+// Активация щита
+function activateShield() {
+    if (!hasShield) {
         hasShield = true;
-        log('🛡️ Вы нашли щит! Блокирует входящий урон.');
+        log('Щит активирован! Неуязвимость к урону.');
         setTimeout(() => {
             hasShield = false;
             log('Щит истек!');
@@ -157,42 +156,48 @@ function activateTemporaryBoost() {
     }
 }
 
-// Применение постоянного усиления
-function applyPermanentBoost() {
-    playerDamage += 5;
-    log('⚔️ Постоянное усиление! Урон увеличен до ' + playerDamage);
-}
-
 // Переход на следующий уровень
 function nextLevel() {
     currentLevel += 1;
-    playerHealth = INITIAL_PLAYER_HEALTH;
-    playerDamage = INITIAL_PLAYER_DAMAGE;
     generateBoard();
     renderBoard();
     updateUI();
-    log('Вы перешли на уровень ' + currentLevel + '!');
+    log('Вы перешли на уровень ' + currentLevel);
 }
 
-// Атака врага
-function attackEnemy(x, y) {
-    let enemy = enemies.find(e => e.x === x && e.y === y);
-    if (enemy) {
-        enemy.health -= playerDamage;
-        if (enemy.health <= 0) {
-            log('💥 Враг повержен!');
-            enemies = enemies.filter(e => e !== enemy);
-            board[y][x] = '.';
-        } else {
-            log('Вы нанесли ' + playerDamage + ' урона врагу. Здоровье врага: ' + enemy.health);
+// Обработка атаки врагов
+function enemyAttack() {
+    for (let enemy of enemies) {
+        if (Math.abs(playerPosition.x - enemy.x) <= 1 && Math.abs(playerPosition.y - enemy.y) <= 1) {
+            if (!hasShield) {
+                playerHealth -= enemy.damage;
+                if (playerHealth <= 0) {
+                    playerHealth = 0;
+                    log('💀 Вы погибли!');
+                    alert('Game Over');
+                    window.location.reload();
+                } else {
+                    log('Вас атакует враг! Ваше здоровье: ' + playerHealth);
+                }
+            }
         }
     }
 }
 
-// Обновление игрового поля
-function updateBoard() {
-    board[playerPosition.y][playerPosition.x] = '.';
-    board = board.map(row => row.map(cell => cell === '@' ? '.' : cell));
+// Атака врага при столкновении
+function attackEnemy(x, y) {
+    enemies = enemies.filter(enemy => {
+        if (enemy.x === x && enemy.y === y) {
+            enemy.health -= playerDamage;
+            if (enemy.health <= 0) {
+                log('Враг побежден!');
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
+    });
 }
 
 // Обновление интерфейса
@@ -201,52 +206,14 @@ function updateUI() {
     document.getElementById('max-health').textContent = MAX_HEALTH;
     document.getElementById('damage').textContent = playerDamage;
     document.getElementById('level').textContent = currentLevel;
-    document.getElementById('enemy-damage').textContent = INITIAL_ENEMY_DAMAGE + currentLevel - 1;
+    document.getElementById('enemy-count').textContent = enemies.length;
 }
 
-// Логирование сообщений
+// Логирование событий
 function log(message) {
     const logElement = document.getElementById('log');
-    logElement.textContent = message;
-}
-
-// Обработка атаки врага
-function enemyAttack() {
-    for (let enemy of enemies) {
-        if (enemy.x === playerPosition.x && enemy.y === playerPosition.y) {
-            if (hasShield) {
-                log('🛡️ Щит блокирует входящий урон!');
-            } else {
-                playerHealth -= enemy.damage;
-                if (playerHealth <= 0) {
-                    log('💀 Вы погибли!');
-                    alert('Game Over');
-                    // Перезагрузить игру
-                    window.location.reload();
-                } else {
-                    log('Враг атакует! Ваше здоровье: ' + playerHealth);
-                }
-            }
-        }
-    }
-}
-
-// Обработка урона при перемещении рядом с врагами
-function checkProximityDamage() {
-    for (let enemy of enemies) {
-        if (Math.abs(playerPosition.x - enemy.x) <= 1 && Math.abs(playerPosition.y - enemy.y) <= 1) {
-            if (!hasShield) {
-                playerHealth -= enemy.damage;
-                if (playerHealth <= 0) {
-                    log('💀 Вы погибли!');
-                    alert('Game Over');
-                    window.location.reload();
-                } else {
-                    log('Враг рядом! Ваше здоровье: ' + playerHealth);
-                }
-            }
-        }
-    }
+    logElement.textContent += message + '\n';
+    logElement.scrollTop = logElement.scrollHeight;
 }
 
 // Инициализация игры
@@ -254,13 +221,23 @@ function initializeGame() {
     generateBoard();
     renderBoard();
     updateUI();
-
-    document.getElementById('moveUp').addEventListener('click', () => movePlayer('up'));
-    document.getElementById('moveDown').addEventListener('click', () => movePlayer('down'));
-    document.getElementById('moveLeft').addEventListener('click', () => movePlayer('left'));
-    document.getElementById('moveRight').addEventListener('click', () => movePlayer('right'));
-
-    setInterval(checkProximityDamage, 1000); // Проверка урона от врагов раз в секунду
+    gameStarted = true;
 }
 
-initializeGame();
+// Установка обработчиков событий
+document.getElementById('startButton').addEventListener('click', () => {
+    if (!gameStarted) {
+        initializeGame();
+        document.getElementById('startButton').style.display = 'none';
+    }
+});
+
+document.getElementById('moveUp').addEventListener('touchstart', () => movePlayer('up'));
+document.getElementById('moveDown').addEventListener('touchstart', () => movePlayer('down'));
+document.getElementById('moveLeft').addEventListener('touchstart', () => movePlayer('left'));
+document.getElementById('moveRight').addEventListener('touchstart', () => movePlayer('right'));
+
+document.getElementById('moveUp').addEventListener('mousedown', () => movePlayer('up'));
+document.getElementById('moveDown').addEventListener('mousedown', () => movePlayer('down'));
+document.getElementById('moveLeft').addEventListener('mousedown', () => movePlayer('left'));
+document.getElementById('moveRight').addEventListener('mousedown', () => movePlayer('right'));
