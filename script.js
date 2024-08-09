@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startButton = document.getElementById('startButton');
     const nextFloorButton = document.getElementById('nextFloorButton');
     const log = document.getElementById('log');
+    const floorDisplay = document.getElementById('floor');
 
     let player = {
         x: 0,
@@ -24,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let enemies = [];
     let items = [];
     let currentLanguage = 'en';
+    let currentFloor = 0;
+    let keyPosition = null;
 
     const languages = {
         en: {
@@ -40,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             health: '❤️ HP',
             defense: '🛡️ Defense',
             level: '🏆 Level',
+            floor: '🏢 Floor: ',
             nextFloor: 'Next Floor',
             settings: 'Settings',
             switchLanguage: 'Switch Language',
@@ -59,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             health: '❤️ Здоровье',
             defense: '🛡️ Защита',
             level: '🏆 Уровень',
+            floor: '🏢 Этаж: ',
             nextFloor: 'Следующий Этаж',
             settings: 'Настройки',
             switchLanguage: 'Сменить Язык',
@@ -70,10 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
         board.innerHTML = '';
         enemies = [];
         items = [];
+        currentFloor = 0;
         player.x = Math.floor(boardSize / 2);
         player.y = 0;
         generateLevel();
         updateStats();
+        floorDisplay.textContent = `${languages[currentLanguage].floor}${currentFloor}`;
         nextFloorButton.classList.add('hidden');
         log.textContent = languages[currentLanguage].start;
     }
@@ -113,6 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const randomIndex = Math.floor(Math.random() * (boardSize * boardSize));
             const cell = board.children[randomIndex];
             if (!cell.textContent) {
+                keyPosition = {
+                    x: randomIndex % boardSize,
+                    y: Math.floor(randomIndex / boardSize)
+                };
                 cell.textContent = languages[currentLanguage].key;
                 keyPlaced = true;
             }
@@ -130,9 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     enemies.push({
                         x: randomIndex % boardSize,
                         y: Math.floor(randomIndex / boardSize),
-                        health: 5 + level * 2,
-                        attack: 1 + level * 0.5,
-                        defense: 0 + level * 0.2
+                        health: 5 + currentFloor * 2,
+                        attack: 1 + currentFloor * 0.5,
+                        defense: 0 + currentFloor * 0.2
                     });
                     enemyPlaced = true;
                 }
@@ -150,21 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const itemType = ['doubleDamage', 'shield', 'invisibility'][Math.floor(Math.random() * 3)];
                     cell.textContent = languages[currentLanguage][itemType];
                     items.push({
-                        type: itemType,
                         x: randomIndex % boardSize,
-                        y: Math.floor(randomIndex / boardSize)
+                        y: Math.floor(randomIndex / boardSize),
+                        type: itemType
                     });
                     itemPlaced = true;
                 }
             }
         }
-    }
-
-    function updateStats() {
-        document.getElementById('health').textContent = `${languages[currentLanguage].health}: ${player.health}/${player.maxHealth}`;
-        document.getElementById('attack').textContent = `${languages[currentLanguage].attack}: ${player.attack}`;
-        document.getElementById('defense').textContent = `${languages[currentLanguage].defense}: ${player.defense}`;
-        document.getElementById('level').textContent = `${languages[currentLanguage].level}: ${player.level}`;
     }
 
     function movePlayer(dx, dy) {
@@ -190,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkCollisions() {
-        // Check for collisions with enemies and items
         const index = player.y * boardSize + player.x;
         const cell = board.children[index];
         if (cell.textContent === languages[currentLanguage].exit) {
@@ -201,18 +204,49 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const item of items) {
                 if (item.x === player.x && item.y === player.y) {
                     // Logic for picking up items
+                    applyItemEffect(item);
                 }
             }
             for (const enemy of enemies) {
                 if (enemy.x === player.x && enemy.y === player.y) {
                     // Logic for fighting enemies
+                    fightEnemy(enemy);
                 }
             }
         }
     }
 
+    function fightEnemy(enemy) {
+        player.health -= Math.max(1, enemy.attack - player.defense);
+        enemy.health -= player.attack;
+        log.textContent = languages[currentLanguage].enemyDefeated;
+        if (enemy.health <= 0) {
+            enemies = enemies.filter(e => e !== enemy);
+            // Check if item is dropped
+        }
+        if (player.health <= 0) {
+            log.textContent = 'Game Over';
+            // Logic for game over
+        }
+        updateStats();
+    }
+
+    function applyItemEffect(item) {
+        switch (item.type) {
+            case 'doubleDamage':
+                player.attack *= 2;
+                break;
+            case 'shield':
+                player.defense *= 2;
+                break;
+            case 'invisibility':
+                // Temporary invulnerability logic
+                break;
+        }
+    }
+
     function nextFloor() {
-        // Logic for going to the next floor
+        currentFloor++;
         initGame();
     }
 
@@ -223,6 +257,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function toggleLanguage() {
         currentLanguage = currentLanguage === 'en' ? 'ru' : 'en';
         updateStats();
+    }
+
+    function updateStats() {
+        document.getElementById('health').textContent = `${languages[currentLanguage].health} ${player.health}/${player.maxHealth}`;
+        document.getElementById('attack').textContent = `${languages[currentLanguage].attack}: ${player.attack}`;
+        document.getElementById('defense').textContent = `${languages[currentLanguage].defense}: ${player.defense}`;
+        document.getElementById('level').textContent = `${languages[currentLanguage].level}: ${player.level}`;
+        floorDisplay.textContent = `${languages[currentLanguage].floor}${currentFloor}`;
     }
 
     settingsToggle.addEventListener('click', () => {
