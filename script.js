@@ -1,237 +1,242 @@
+// script.js
 document.addEventListener('DOMContentLoaded', () => {
-    const gameBoard = document.getElementById('gameBoard');
-    const log = document.getElementById('log');
-    const startButton = document.getElementById('startButton');
-    const nextFloorButton = document.getElementById('nextFloorButton');
+    const boardSize = 10;
+    const board = document.getElementById('gameBoard');
     const settingsToggle = document.getElementById('settingsToggle');
     const settingsMenu = document.getElementById('settingsMenu');
     const themeToggle = document.getElementById('themeToggle');
     const languageToggle = document.getElementById('languageToggle');
+    const startButton = document.getElementById('startButton');
+    const nextFloorButton = document.getElementById('nextFloorButton');
+    const log = document.getElementById('log');
 
     let player = {
+        x: 0,
+        y: 0,
         health: 20,
         maxHealth: 20,
         attack: 2,
-        shield: 0,
-        x: 4,
-        y: 4
+        defense: 0,
+        level: 1,
+        experience: 0
     };
 
     let enemies = [];
     let items = [];
-    let level = 1;
-    let boardSize = 10;
-
     let currentLanguage = 'en';
 
     const languages = {
         en: {
-            start: 'Start Game',
+            start: 'Game started!',
+            levelUp: 'Level up!',
+            pickedUp: 'Picked up',
+            enemyDefeated: 'Enemy defeated!',
+            exit: 'Exit',
+            key: 'Key',
+            doubleDamage: 'Double Damage',
             shield: 'Shield',
-            health: 'HP',
-            attack: 'Attack',
-            theme: 'Toggle Theme',
-            lang: 'Switch Language',
-            enemy: 'E',
-            wall: '|',
-            exit: 'O',
-            player: '@',
-            potion: '+',
-            healthUp: 'Health Up',
-            attackUp: 'Attack Up',
-            shieldUp: 'Shield Up',
-            nextFloor: 'Next Floor'
+            invisibility: 'Invisibility',
+            attack: '⚔️ Attack',
+            health: '❤️ HP',
+            defense: '🛡️ Defense',
+            level: '🏆 Level',
+            nextFloor: 'Next Floor',
+            settings: 'Settings',
+            switchLanguage: 'Switch Language',
+            toggleTheme: 'Toggle Theme'
         },
         ru: {
-            start: 'Начать Игру',
+            start: 'Игра началась!',
+            levelUp: 'Повышение уровня!',
+            pickedUp: 'Подобрано',
+            enemyDefeated: 'Враг повержен!',
+            exit: 'Выход',
+            key: 'Ключ',
+            doubleDamage: 'Двойной Урон',
             shield: 'Щит',
-            health: 'Здоровье',
-            attack: 'Атака',
-            theme: 'Переключить Тему',
-            lang: 'Сменить Язык',
-            enemy: 'В',
-            wall: '|',
-            exit: 'В',
-            player: '@',
-            potion: '+',
-            healthUp: 'Увеличение Здоровья',
-            attackUp: 'Увеличение Атаки',
-            shieldUp: 'Щит',
-            nextFloor: 'На Следующий Этаж'
+            invisibility: 'Невидимость',
+            attack: '⚔️ Атака',
+            health: '❤️ Здоровье',
+            defense: '🛡️ Защита',
+            level: '🏆 Уровень',
+            nextFloor: 'Следующий Этаж',
+            settings: 'Настройки',
+            switchLanguage: 'Сменить Язык',
+            toggleTheme: 'Сменить Тему'
         }
     };
 
     function initGame() {
-        level = 1;
-        player = {
-            health: 20,
-            maxHealth: 20,
-            attack: 2,
-            shield: 0,
-            x: Math.floor(boardSize / 2),
-            y: 0
-        };
+        board.innerHTML = '';
         enemies = [];
         items = [];
-        gameBoard.innerHTML = '';
-        log.innerHTML = '';
-        createBoard();
+        player.x = Math.floor(boardSize / 2);
+        player.y = 0;
+        generateLevel();
         updateStats();
         nextFloorButton.classList.add('hidden');
+        log.textContent = languages[currentLanguage].start;
     }
 
-    function createBoard() {
-        gameBoard.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
-        gameBoard.style.gridTemplateRows = `repeat(${boardSize}, 1fr)`;
+    function generateLevel() {
+        // Generate board
         for (let i = 0; i < boardSize * boardSize; i++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.textContent = '';
-            gameBoard.appendChild(tile);
+            const cell = document.createElement('div');
+            board.appendChild(cell);
         }
-        placePlayer();
+
+        // Place player
+        const startIndex = player.y * boardSize + player.x;
+        board.children[startIndex].textContent = '@';
+
+        // Place key and exit
+        placeKeyAndExit();
+        
+        // Place enemies and items
         placeEnemies();
         placeItems();
-        placeExit();
     }
 
-    function placePlayer() {
-        const playerIndex = player.y * boardSize + player.x;
-        gameBoard.children[playerIndex].textContent = languages[currentLanguage].player;
+    function placeKeyAndExit() {
+        let exitPlaced = false;
+        while (!exitPlaced) {
+            const randomIndex = Math.floor(Math.random() * (boardSize * boardSize));
+            const cell = board.children[randomIndex];
+            if (!cell.textContent) {
+                cell.textContent = languages[currentLanguage].exit;
+                exitPlaced = true;
+            }
+        }
+
+        let keyPlaced = false;
+        while (!keyPlaced) {
+            const randomIndex = Math.floor(Math.random() * (boardSize * boardSize));
+            const cell = board.children[randomIndex];
+            if (!cell.textContent) {
+                cell.textContent = languages[currentLanguage].key;
+                keyPlaced = true;
+            }
+        }
     }
 
     function placeEnemies() {
         for (let i = 0; i < 5; i++) {
-            const x = Math.floor(Math.random() * boardSize);
-            const y = Math.floor(Math.random() * boardSize);
-            enemies.push({ x, y, health: 5 + level - 1, attack: 1 + level - 1 });
-            const enemyIndex = y * boardSize + x;
-            gameBoard.children[enemyIndex].textContent = languages[currentLanguage].enemy;
+            let enemyPlaced = false;
+            while (!enemyPlaced) {
+                const randomIndex = Math.floor(Math.random() * (boardSize * boardSize));
+                const cell = board.children[randomIndex];
+                if (!cell.textContent) {
+                    cell.textContent = 'E';
+                    enemies.push({
+                        x: randomIndex % boardSize,
+                        y: Math.floor(randomIndex / boardSize),
+                        health: 5 + level * 2,
+                        attack: 1 + level * 0.5,
+                        defense: 0 + level * 0.2
+                    });
+                    enemyPlaced = true;
+                }
+            }
         }
     }
 
     function placeItems() {
-        const itemsArray = [
-            { type: 'health', x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize) },
-            { type: 'attack', x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize) },
-            { type: 'shield', x: Math.floor(Math.random() * boardSize), y: Math.floor(Math.random() * boardSize) }
-        ];
-        items = itemsArray;
-        items.forEach(item => {
-            const itemIndex = item.y * boardSize + item.x;
-            gameBoard.children[itemIndex].textContent = languages[currentLanguage][item.type + 'Up'];
-        });
-    }
-
-    function placeExit() {
-        const x = Math.floor(Math.random() * boardSize);
-        const y = Math.floor(Math.random() * boardSize);
-        const exitIndex = y * boardSize + x;
-        gameBoard.children[exitIndex].textContent = languages[currentLanguage].exit;
+        if (Math.random() < 0.5) {
+            let itemPlaced = false;
+            while (!itemPlaced) {
+                const randomIndex = Math.floor(Math.random() * (boardSize * boardSize));
+                const cell = board.children[randomIndex];
+                if (!cell.textContent) {
+                    const itemType = ['doubleDamage', 'shield', 'invisibility'][Math.floor(Math.random() * 3)];
+                    cell.textContent = languages[currentLanguage][itemType];
+                    items.push({
+                        type: itemType,
+                        x: randomIndex % boardSize,
+                        y: Math.floor(randomIndex / boardSize)
+                    });
+                    itemPlaced = true;
+                }
+            }
+        }
     }
 
     function updateStats() {
-        document.getElementById('health').textContent = `❤️ HP: ${player.health}/${player.maxHealth}`;
-        document.getElementById('attack').textContent = `⚔️ Attack: ${player.attack}`;
-        document.getElementById('shield').textContent = `🛡️ Shield: ${player.shield}`;
+        document.getElementById('health').textContent = `${languages[currentLanguage].health}: ${player.health}/${player.maxHealth}`;
+        document.getElementById('attack').textContent = `${languages[currentLanguage].attack}: ${player.attack}`;
+        document.getElementById('defense').textContent = `${languages[currentLanguage].defense}: ${player.defense}`;
+        document.getElementById('level').textContent = `${languages[currentLanguage].level}: ${player.level}`;
     }
 
     function movePlayer(dx, dy) {
         const newX = player.x + dx;
         const newY = player.y + dy;
-        if (isValidMove(newX, newY)) {
-            const prevIndex = player.y * boardSize + player.x;
-            gameBoard.children[prevIndex].textContent = '';
-            player.x = newX;
-            player.y = newY;
-            const newIndex = player.y * boardSize + player.x;
-            gameBoard.children[newIndex].textContent = languages[currentLanguage].player;
-
-            // Check for collisions
-            checkCollisions();
+        const newIndex = newY * boardSize + newX;
+        if (newX >= 0 && newX < boardSize && newY >= 0 && newY < boardSize) {
+            const cell = board.children[newIndex];
+            if (cell.textContent !== 'E') {
+                player.x = newX;
+                player.y = newY;
+                updateBoard();
+                checkCollisions();
+            }
         }
+    }
+
+    function updateBoard() {
+        board.innerHTML = '';
+        generateLevel();
+        const startIndex = player.y * boardSize + player.x;
+        board.children[startIndex].textContent = '@';
     }
 
     function checkCollisions() {
-        enemies.forEach(enemy => {
-            const enemyIndex = enemy.y * boardSize + enemy.x;
-            if (player.x === enemy.x && player.y === enemy.y) {
-                // Player attacks enemy
-                enemy.health -= player.attack;
-                log.innerHTML += `<p>${languages[currentLanguage].enemy} attacked!</p>`;
-                if (enemy.health <= 0) {
-                    // Enemy defeated
-                    log.innerHTML += `<p>${languages[currentLanguage].enemy} defeated!</p>`;
-                    gameBoard.children[enemyIndex].textContent = '';
-                    // Drop items
-                    if (Math.random() < 0.5) {
-                        const itemType = Math.random() < 0.5 ? 'attack' : 'health';
-                        items.push({ type: itemType, x: enemy.x, y: enemy.y });
-                        const itemIndex = enemy.y * boardSize + enemy.x;
-                        gameBoard.children[itemIndex].textContent = languages[currentLanguage][itemType + 'Up'];
-                    }
+        // Check for collisions with enemies and items
+        const index = player.y * boardSize + player.x;
+        const cell = board.children[index];
+        if (cell.textContent === languages[currentLanguage].exit) {
+            nextFloor();
+        } else if (cell.textContent === languages[currentLanguage].key) {
+            // Logic for picking up key
+        } else {
+            for (const item of items) {
+                if (item.x === player.x && item.y === player.y) {
+                    // Logic for picking up items
                 }
             }
-        });
-
-        items.forEach(item => {
-            const itemIndex = item.y * boardSize + item.x;
-            if (player.x === item.x && player.y === item.y) {
-                // Player picks up item
-                log.innerHTML += `<p>Picked up ${languages[currentLanguage][item.type + 'Up']}!</p>`;
-                if (item.type === 'health') {
-                    player.health = Math.min(player.maxHealth, player.health + 5);
-                } else if (item.type === 'attack') {
-                    player.attack += 1;
-                } else if (item.type === 'shield') {
-                    player.shield += 1;
+            for (const enemy of enemies) {
+                if (enemy.x === player.x && enemy.y === player.y) {
+                    // Logic for fighting enemies
                 }
-                updateStats();
-                gameBoard.children[itemIndex].textContent = '';
             }
-        });
-
-        // Check if player is on the exit
-        if (gameBoard.children[player.y * boardSize + player.x].textContent === languages[currentLanguage].exit) {
-            level += 1;
-            boardSize += 2;
-            initGame();
-            nextFloorButton.classList.add('hidden');
         }
     }
 
-    function isValidMove(x, y) {
-        return x >= 0 && x < boardSize && y >= 0 && y < boardSize && !enemies.some(enemy => enemy.x === x && enemy.y === y);
+    function nextFloor() {
+        // Logic for going to the next floor
+        initGame();
     }
 
-    // Event Listeners
-    document.getElementById('up').addEventListener('click', () => movePlayer(0, -1));
-    document.getElementById('down').addEventListener('click', () => movePlayer(0, 1));
-    document.getElementById('left').addEventListener('click', () => movePlayer(-1, 0));
-    document.getElementById('right').addEventListener('click', () => movePlayer(1, 0));
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    function toggleLanguage() {
+        currentLanguage = currentLanguage === 'en' ? 'ru' : 'en';
+        updateStats();
+    }
 
     settingsToggle.addEventListener('click', () => {
         settingsMenu.classList.toggle('hidden');
     });
 
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
-    });
+    themeToggle.addEventListener('click', toggleTheme);
+    languageToggle.addEventListener('click', toggleLanguage);
 
-    languageToggle.addEventListener('click', () => {
-        currentLanguage = currentLanguage === 'en' ? 'ru' : 'en';
-        updateStats();
-        log.innerHTML += `<p>Language changed to ${languages[currentLanguage].lang}</p>`;
-        initGame();
-    });
+    document.getElementById('up').addEventListener('click', () => movePlayer(0, -1));
+    document.getElementById('down').addEventListener('click', () => movePlayer(0, 1));
+    document.getElementById('left').addEventListener('click', () => movePlayer(-1, 0));
+    document.getElementById('right').addEventListener('click', () => movePlayer(1, 0));
 
     startButton.addEventListener('click', initGame);
-
-    nextFloorButton.addEventListener('click', () => {
-        level += 1;
-        boardSize += 2;
-        initGame();
-    });
-
-    initGame();
+    nextFloorButton.addEventListener('click', nextFloor);
 });
