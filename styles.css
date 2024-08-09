@@ -3,6 +3,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0;
+    padding: 0;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -88,9 +90,13 @@ body.dark #log {
     color: #ccc;
 }
 
-#startButton, #themeToggle, #languageToggle {
+.settings {
+    margin-bottom: 10px;
+}
+
+.settings button {
     padding: 10px;
-    margin-top: 10px;
+    margin: 5px;
     font-size: 16px;
     background-color: #008CBA;
     color: white;
@@ -99,6 +105,20 @@ body.dark #log {
     cursor: pointer;
 }
 
-#startButton:active, #themeToggle:active, #languageToggle:active {
+.settings button:active {
     background-color: #007BB5;
+}
+
+#settingsMenu {
+    display: none;
+    margin-top: 10px;
+}
+
+#settingsMenu button {
+    display: block;
+    margin: 5px 0;
+}
+
+.hidden {
+    display: none;
 }
