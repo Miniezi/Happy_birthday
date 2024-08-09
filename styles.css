@@ -1,124 +1,72 @@
+/* styles.css */
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     margin: 0;
     padding: 0;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-body.dark {
-    background-color: #222;
-    color: #eee;
-}
-
-#gameBoard {
-    font-family: monospace;
-    line-height: 1.2;
-    margin-bottom: 10px;
-    background-color: #f0f0f0;
-    padding: 10px;
-    border: 2px solid #333;
-    width: 400px;
-    height: 400px;
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
-}
-
-body.dark #gameBoard {
-    background-color: #333;
-    border-color: #888;
-}
-
-.tile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.controls {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 10px;
 }
 
-.controls-row {
-    display: flex;
-}
-
-.controls button {
-    padding: 10px;
-    margin: 5px;
-    font-size: 24px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    touch-action: manipulation;
-    user-select: none;
-    width: 60px;
-    height: 60px;
-}
-
-.controls button:active {
-    background-color: #45a049;
-}
-
-.stats {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-#log {
-    width: 420px;
-    height: 150px;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    padding: 5px;
-    font-size: 14px;
-    background-color: #fff;
-    color: #000;
-    word-wrap: break-word;
-}
-
-body.dark #log {
-    background-color: #444;
-    color: #ccc;
-}
-
-.settings {
-    margin-bottom: 10px;
-}
-
-.settings button {
-    padding: 10px;
-    margin: 5px;
-    font-size: 16px;
-    background-color: #008CBA;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.settings button:active {
-    background-color: #007BB5;
-}
-
-#settingsMenu {
-    display: none;
+#stats {
     margin-top: 10px;
 }
 
-#settingsMenu button {
-    display: block;
-    margin: 5px 0;
+#gameBoard {
+    display: grid;
+    grid-template-columns: repeat(10, 20px);
+    grid-template-rows: repeat(10, 20px);
+    gap: 1px;
+    margin-top: 10px;
+}
+
+#gameBoard div {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #000;
 }
 
 .hidden {
     display: none;
+}
+
+.settings-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.settings-menu {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 10px;
+}
+
+.controls {
+    margin-top: 10px;
+}
+
+#log {
+    margin-top: 10px;
+    white-space: pre-wrap;
+}
+
+body.dark-mode {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode #gameBoard div {
+    background-color: #444;
+    border-color: #666;
+}
+
+body.dark-mode .settings-menu {
+    background-color: #555;
 }
