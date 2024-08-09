@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roguelike Game</title>
+    <title>Text-Based Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="settings">
-        <button id="settingsToggle">Settings</button>
-        <div id="settingsMenu" class="hidden">
-            <button id="themeToggle">Toggle Theme</button>
-            <button id="languageToggle">Switch Language</button>
-        </div>
+    <button id="settingsToggle" class="settings-button">⚙️</button>
+    <div id="settingsMenu" class="settings-menu hidden">
+        <button id="themeToggle">Toggle Theme</button>
+        <button id="languageToggle">Switch Language</button>
     </div>
 
-    <div class="stats">
+    <div id="stats">
         <div id="health">❤️ HP: 20/20</div>
         <div id="attack">⚔️ Attack: 2</div>
-        <div id="shield">🛡️ Shield: 0</div>
+        <div id="defense">🛡️ Defense: 0</div>
+        <div id="level">🏆 Level: 1</div>
     </div>
 
     <div id="gameBoard"></div>
 
     <div class="controls">
-        <div class="controls-row">
-            <button id="up">↑</button>
-        </div>
-        <div class="controls-row">
-            <button id="left">←</button>
-            <button id="down">↓</button>
-            <button id="right">→</button>
-        </div>
+        <button id="up">↑</button>
+        <button id="left">←</button>
+        <button id="down">↓</button>
+        <button id="right">→</button>
     </div>
-
-    <div id="log"></div>
 
     <button id="startButton">Start Game</button>
     <button id="nextFloorButton" class="hidden">Next Floor</button>
+
+    <div id="log"></div>
 
     <script src="script.js"></script>
 </body>
