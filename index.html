@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
+    <title>Roguelike Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark {
+            background-color: #222;
+            color: #eee;
         }
         #gameBoard {
-            white-space: pre;
             font-family: monospace;
-            font-size: 16px;
-            width: 320px; /* фиксированная ширина для игрового поля */
-            height: 320px; /* фиксированная высота для игрового поля */
-            overflow: hidden;
-            margin: 10px 0;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 2px solid #333;
+            width: max-content;
+        }
+        body.dark #gameBoard {
+            background-color: #333;
+            border-color: #888;
         }
         .controls {
             display: flex;
@@ -31,7 +38,7 @@
         .controls button {
             padding: 10px;
             margin: 5px;
-            font-size: 16px;
+            font-size: 18px;
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -41,9 +48,9 @@
         .controls button:active {
             background-color: #45a049;
         }
-        #stats {
-            margin-bottom: 10px;
+        .stats {
             font-size: 14px;
+            margin-bottom: 10px;
         }
         #log {
             width: 320px;
@@ -51,10 +58,15 @@
             overflow-y: auto;
             border: 1px solid #ccc;
             padding: 5px;
-            box-sizing: border-box;
             font-size: 14px;
+            background-color: #fff;
+            color: #000;
         }
-        #startButton {
+        body.dark #log {
+            background-color: #444;
+            color: #ccc;
+        }
+        #startButton, #themeToggle, #languageToggle {
             padding: 10px;
             margin-top: 10px;
             font-size: 16px;
@@ -64,26 +76,28 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        #startButton:active {
+        #startButton:active, #themeToggle:active, #languageToggle:active {
             background-color: #007BB5;
         }
     </style>
 </head>
 <body>
-    <div id="stats">
-        💖 Здоровье: <span id="health"></span> / <span id="max-health"></span><br>
-        ⚔️ Урон: <span id="damage"></span><br>
-        🌟 Уровень: <span id="level"></span><br>
-        🕹️ Враги: <span id="enemy-count"></span>
+    <div class="stats">
+        💖 <span data-i18n="health">HP:</span> <span id="health"></span> / <span id="maxHealth"></span><br>
+        ⚔️ <span data-i18n="damage">Damage:</span> <span id="damage"></span><br>
+        🌟 <span data-i18n="level">Level:</span> <span id="level"></span><br>
+        🕹️ <span data-i18n="enemies">Enemies:</span> <span id="enemyCount"></span>
     </div>
     <div id="gameBoard"></div>
     <div class="controls">
-        <button id="moveUp">⬆️</button>
+        <button id="moveUp">⬆️</button><br>
         <button id="moveLeft">⬅️</button>
-        <button id="moveRight">➡️</button>
+        <button id="moveRight">➡️</button><br>
         <button id="moveDown">⬇️</button>
     </div>
-    <button id="startButton">Старт</button>
+    <button id="startButton" data-i18n="start">Start</button>
+    <button id="themeToggle" data-i18n="toggleTheme">Toggle Theme</button>
+    <button id="languageToggle" data-i18n="toggleLanguage">Switch to Russian</button>
     <div id="log"></div>
     <script src="script.js"></script>
 </body>
