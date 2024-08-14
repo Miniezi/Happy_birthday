@@ -1,40 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text-Based Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Видеоплеер</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 10px;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            border: 2px solid #fff;
+        }
+
+        .message {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            animation: colorChange 3s infinite;
+        }
+
+        @keyframes colorChange {
+            0% { color: red; }
+            25% { color: yellow; }
+            50% { color: green; }
+            75% { color: blue; }
+            100% { color: red; }
+        }
+    </style>
 </head>
 <body>
-    <button id="settingsToggle" class="settings-button">⚙️</button>
-    <div id="settingsMenu" class="settings-menu hidden">
-        <button id="themeToggle">Toggle Theme</button>
-        <button id="languageToggle">Switch Language</button>
+    <div class="container">
+        <video controls>
+            <source src="your-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="message">
+            Поздравляем от всей души тебя, Ваня.<br>
+            Made in China ООО.слайз_залупа.<br>
+            от графа и слайза.
+        </div>
     </div>
-
-    <div id="stats">
-        <div id="floor">🏢 Floor: 0</div>
-        <div id="health">❤️ HP: 20/20</div>
-        <div id="attack">⚔️ Attack: 2</div>
-        <div id="defense">🛡️ Defense: 0</div>
-        <div id="level">🏆 Level: 1</div>
-    </div>
-
-    <div id="gameBoard"></div>
-
-    <div class="controls">
-        <button id="up">↑</button>
-        <button id="left">←</button>
-        <button id="down">↓</button>
-        <button id="right">→</button>
-    </div>
-
-    <button id="startButton">Start Game</button>
-    <button id="nextFloorButton" class="hidden">Next Floor</button>
-
-    <div id="log"></div>
-
-    <script src="script.js"></script>
 </body>
 </html>
